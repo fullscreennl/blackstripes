@@ -6,8 +6,10 @@ class BaseSpiral:
     def configure(self):
         msg = """
 
-            please implement configure:
+            please implement configure.
 
+            example:
+            
             def configure(self):
                 self.radius = 489.0
                 self.spiral_start = (989.0 ,500.0)
