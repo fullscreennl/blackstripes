@@ -56,10 +56,9 @@ class SimuDriver(Driver):
     def __init__(self,file):
         self.file_base_name = file
         f = open(self.file_base_name+".json","r")
-        print self.file_base_name+".json"
         jsonString = f.read()
         self.data = json.loads(jsonString)
-        print 'loading json done: ',file
+        print 'json loaded: ',self.file_base_name+".json"
         
     def simulate(self):
         s = Simulator()
@@ -96,7 +95,6 @@ class SimuDriver(Driver):
             layercounter +=1
             for line in layer:
                 if line[0:5]=='layer':
-                    print 'line is a label',line
                     linecounter +=1
                     continue    
                 linecounter +=1
