@@ -1,5 +1,6 @@
 *.pyc
-
+*.dat
+*.bin
 
 # Compiled source #
 ###################

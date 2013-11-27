@@ -6,7 +6,9 @@ if __name__ == "__main__":
     from Generator import Generator
     from Easer import Easer
     from Model import Blackstripes_MKII
-    from SmallSpiral import Spiral
+    #small spiral fits on cardboard panel
+    from SmallSpiral import SmallSpiral
+    from Spiral import Spiral
 
     m = Blackstripes_MKII()
     Spiral(m,MARKER_NIB_SIZE_MM)
