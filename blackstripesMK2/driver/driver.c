@@ -25,7 +25,6 @@ int easeTableOffset = 500;
 //scp spiral.bin rpi@192.168.0.102:/home/rpi/blackstripes
 //gcc -I/usr/xenomai/include -Ibcm2835-1.25 bcm2835-1.25/bcm2835.c driver.c -L/usr/xenomai/lib -lnative -lxenomai -o driver
 //export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/xenomai/lib
-//pw:linuxcnc
 
 void draw_layer(void *arg)
 {
@@ -165,54 +164,44 @@ void draw_layer(void *arg)
         solenoidPixel_2 = data[i+2];
         solenoidPixel_3 = data[i+3];
 
-        // if(counter >= SPIRAL_START && counter <= SPIRAL_END){
-
-            if(p1 == 0 || solenoidPixel_1 > IMAGE_BOUNDS){
-                solenoid1 = 0;
-            }else if(p1 == 2){
+        if(p1 == 0 || solenoidPixel_1 > IMAGE_BOUNDS){
+            solenoid1 = 0;
+        }else if(p1 == 2){
+            solenoid1 = 2;
+        }else{
+            pixelValue1 = imageData[solenoidPixel_1+imageDataOffset];
+            if (pixelValue1 < imageData[0+even]){
                 solenoid1 = 2;
             }else{
-                pixelValue1 = imageData[solenoidPixel_1+imageDataOffset];
-                if (pixelValue1 < imageData[0+even]){
-                    solenoid1 = 2;
-                }else{
-                    solenoid1 = 0;
-                }
+                solenoid1 = 0;
             }
+        }
 
-            if(p2 == 0 || solenoidPixel_2 > IMAGE_BOUNDS){
-                solenoid2 = 0;
-            }else if(p2 == 2){
+        if(p2 == 0 || solenoidPixel_2 > IMAGE_BOUNDS){
+            solenoid2 = 0;
+        }else if(p2 == 2){
+            solenoid2 = 2;
+        }else{
+            pixelValue2 = imageData[solenoidPixel_2+imageDataOffset];
+            if (pixelValue2 < imageData[2+even]){
                 solenoid2 = 2;
             }else{
-                pixelValue2 = imageData[solenoidPixel_2+imageDataOffset];
-                if (pixelValue2 < imageData[2+even]){
-                    solenoid2 = 2;
-                }else{
-                    solenoid2 = 0;
-                }
+                solenoid2 = 0;
             }
+        }
 
-            if(p3 == 0 || solenoidPixel_3 > IMAGE_BOUNDS){
-                solenoid3 = 0;
-            }else if(p3 == 2){
+        if(p3 == 0 || solenoidPixel_3 > IMAGE_BOUNDS){
+            solenoid3 = 0;
+        }else if(p3 == 2){
+            solenoid3 = 2;
+        }else{
+            pixelValue3 = imageData[solenoidPixel_3+imageDataOffset];
+            if (pixelValue3 < imageData[4+even]){
                 solenoid3 = 2;
             }else{
-                pixelValue3 = imageData[solenoidPixel_3+imageDataOffset];
-                if (pixelValue3 < imageData[4+even]){
-                    solenoid3 = 2;
-                }else{
-                    solenoid3 = 0;
-                }
+                solenoid3 = 0;
             }
-
-        // }else{
-
-        //     solenoid1 = 0;
-        //     solenoid2 = 0;
-        //     solenoid3 = 0;
-
-        // }
+        }
 
         speed = (record & speed_mask);
 

@@ -4,22 +4,16 @@ from subprocess import Popen
 os.chdir(os.getcwd())
 
 if os.path.isfile("spiral.bin"):
-	print "motiondata found.."
+    print "motiondata found.."
 else:
-	print "ERROR : motiondata not found"
-	os._exit(0)
+    print "ERROR : motiondata not found"
+    os._exit(0)
 
 if os.path.isfile("image.bin"):
-	print "image found.."
+    print "image found.."
 else:
-	print "ERROR : image not found"
-	os._exit(0)
-
-# res = os.system("./up")
-# if not res:
-#         print "GPIO OK.."
-# else:
-#         os._exit(1)
+    print "ERROR : image not found"
+    os._exit(0)
 
 raw_input("start drawing?")
 

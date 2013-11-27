@@ -13,10 +13,10 @@ data = f.read()
 f.close()
 
 try:
-	sockobj.send(data)
-	sockobj.send("EOF")
-	print "sending data"
+    sockobj.send(data)
+    sockobj.send("EOF")
+    print "sending data"
 except:
-	print "socket error"
+    print "socket error"
 
 sockobj.close()
