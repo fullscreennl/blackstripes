@@ -1,7 +1,4 @@
 import time
-#import wiringpi
-#import RPi.GPIO as GPIO
-#GPIO driver for Raspberry PI
  
 class Printer:
     #drivers should work untill 400kHz
@@ -29,7 +26,7 @@ class Printer:
     
     def __init__(self,file_base_name):
     
-        self.RAW_OUTPUT = open('layer0.dat', 'w')
+        self.rawOutput = open('layer0.dat', 'w')
         self.layercounter = 0
         L_clk = 5   #header pin 5 
         L_dir = 3   #header pin 3 
@@ -40,36 +37,14 @@ class Printer:
         self.rightChannel = [R_clk,R_dir]
         self.printerHead = [Solenoid]
         self.lastdirs =[0,0]
-        
-        """
-        wiringpi.wiringPiSetup()
-        
-        wiringpi.pinMode(L_clk,1)
-        wiringpi.pinMode(L_dir,1)
-        wiringpi.pinMode(R_clk,1)
-        wiringpi.pinMode(R_dir,1)
-        wiringpi.pinMode(Solenoid,1)
-        """
-        """
-        GPIO.setmode(GPIO.BOARD)
-        
-        GPIO.setup(L_clk,GPIO.OUT)
-        GPIO.setup(L_dir,GPIO.OUT)
-        GPIO.setup(R_dir,GPIO.OUT)
-        GPIO.setup(R_clk,GPIO.OUT)
-        GPIO.setup(Solenoid,GPIO.OUT)
-        """
-        self.calculateDelays()
+        self.calculateDelays()  
         
     def saveLayer(self):
         self.finalize();
         self.layercounter +=1
-        self.RAW_OUTPUT = open('layer'+str(self.layercounter)+'.dat', 'w')
-        
+        self.rawOutput = open('layer'+str(self.layercounter)+'.dat', 'w')
 
-        
     def printBatch(self, cmds, currentIndex, totalLength):
-        #if(float(currentIndex)/float(totalLength)) > 0.5: 
         if((totalLength - currentIndex) < currentIndex):
             delta = totalLength - currentIndex
         else:
@@ -81,15 +56,7 @@ class Printer:
         # create exception putting delta over ease size to max transport speed long generated sweep have manu more cmds than STEP_PER_MM value
         # 12.5 mm linespacing * 42.55 steps per mm is cmds generated btween lines these should be low speed to its the treshold to go fast or not
         #print 'len(cmds)',len(cmds)
-        """
-        if len(cmds)>4400: #14*43 tunred out to be to low
-            delta = self.EASE_SIZE + 1
-        
-        
-        for cmd in cmds:
-            #self.executeInstruction(cmd, delta)
-            self.logCmdsToFile(cmd, delta)
-        """
+
         gencmds = len(cmds)
         CMDCOUNT=0
         if gencmds > 1000: #14*43 tunred out to be to low
@@ -100,82 +67,14 @@ class Printer:
                 else:
                     delta = int(CMDCOUNT/43.0)
                 CMDCOUNT = CMDCOUNT + 1
-                #delta = self.EASE_SIZE + 1
                 self.logCmdsToFile(cmd, delta)
         else:
             for cmd in cmds:
                 self.logCmdsToFile(cmd, delta)  
     
     def logCmdsToFile(self,cmd,delta):
-        self.RAW_OUTPUT.write(str(cmd[0])+','+str(cmd[1])+','+str(cmd[2])+','+str(delta)+'\n')
+        self.rawOutput.write(str(cmd[0])+','+str(cmd[1])+','+str(cmd[2])+','+str(delta)+'\n')
         
     def finalize(self):
-        self.RAW_OUTPUT.close() 
+        self.rawOutput.close() 
     
-    def executeInstruction(self, cmd, delta):
-        self.stepEngine(0, cmd[0], delta) #left engine
-        self.stepEngine(1, cmd[1], delta) #right engine
-        self.driveSolenoid(cmd[2]) #penhead
-    
-    def wait(self,count):
-        while count:
-            count = count -1
-        
-    def stepEngine(self, engine, cmd, delta):
-        if(cmd==0):
-            return
-        # rudimentary easing motor speeds 
-        if delta > self.EASE_SIZE:
-            #20 mm traveled go max speed
-            delay = self.MINDELAY
-        else:
-            #transistion from MAXDELAY to MINDELAY based on the calculated delta value
-            #delay = self.MAXDELAY*( 1 - (float(delta)/float(self.EASE_SIZE))) + self.MINDELAY;
-            delay = self.delays[delta]
-            #delay = self.MINDELAY  
-        #print 'delay: ', delay  
-        
-        if(engine==1):
-            channel  = self.leftChannel
-            cmd = -1*cmd
-        else:
-            channel  = self.rightChannel
-            #cmd = -1*cmd
-        #direction toggle   
-        #print 'writing digitalpin'
-        if cmd!=self.lastdirs[engine]:
-            if cmd<0 :
-                pass
-                #wiringpi.digitalWrite(channel[1],0)
-                #GPIO.output(channel[1],False)
-            else:
-                pass
-                #wiringpi.digitalWrite(channel[1],1)
-                #GPIO.output(channel[1],True)
-        #print 'digitalwrite done'
-        self.lastdirs[engine]=cmd
-        #stepclockpulse one HIGH, followed by a LOW 
-        #wiringpi.digitalWrite(channel[0],1)
-        #GPIO.output(channel[0],True)
-        #time.sleep(delay)
-        #if engine==0:
-        #   print 'engine: ',engine,'delay: ',delay,'delta',delta
-        self.wait(delay)
-        #wiringpi.digitalWrite(channel[0],0)
-        #GPIO.output(channel[0],False)
-        #time.sleep(delay)
-        self.wait(delay)
-        
-    def driveSolenoid(self,cmd):
-        if cmd==0:
-            return
-        if(cmd<0):
-            pass
-            #pen up, solenoid should be switched on in our design
-            #wiringpi.digitalWrite(self.printerHead[0],1)
-            #GPIO.output(self.printerHead[0],True)
-        else:
-            pass
-            #pen down
-            #wiringpi.digitalWrite(self.printerHead[0],0)
-            #GPIO.output(self.printerHead[0],False)

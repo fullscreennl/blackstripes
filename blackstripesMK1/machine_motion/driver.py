@@ -16,7 +16,7 @@ class Driver:
         self.right_accumulator = 0.0
         self.up_accumulator = 0.0
         printer = Printer(self.file)
-        printer.executeInstruction([0,0,-1],0)
+        #printer.executeInstruction([0,0,-1],0)
         if lineToStart==0  or start ==0:
             l,r = g_NullPosition
             x = 0
@@ -30,12 +30,10 @@ class Driver:
             if linecounter >= lineToStart:
                 if line[1:6]=='layer':
                     printer.saveLayer()
-                    print 'line is a label',line
                     linecounter +=1
                     continue
                 lineData2 = json.loads(line)
                 sublines = self.analyseLine(lineData2)
-                print 'line: ',linecounter
                 for lineData in sublines:
                     counter = 0
                     length = len(lineData)
@@ -71,12 +69,10 @@ class Driver:
         linecounter=0
         for line in f:
             if linecounter == prevline:
-                print 'found previous line', linecounter
                 lineData = json.loads(line)
                 break
             linecounter +=1
         dot = lineData[len(lineData)-1]
-        print 'last dot in prev line',dot
         l,r,x = dot
         pos = (l,r,x)
         f.close()

@@ -28,7 +28,7 @@ print vals
 print len(vals)
 
 for v in vals:
-	print int(round(v/200))*"*"
+    print int(round(v/200))*"*"
 
 vals = []
 for p in range(int(round(numsteps))):
@@ -43,4 +43,4 @@ print vals
 print len(vals)
 
 for v in vals:
-	print int(round(v/200))*"*"
+    print int(round(v/200))*"*"

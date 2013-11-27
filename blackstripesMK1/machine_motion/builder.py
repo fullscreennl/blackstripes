@@ -41,15 +41,15 @@ def posFromLengths(l1,l2):
     if d == 0 and l1 == l2:
         return None
         
-    a = (l1*l1 - l2*l2 + d*d) / (2*d);
+    a = (l1*l1 - l2*l2 + d*d) / (2*d)
 
     #Solve for h
     h = math.sqrt(l1*l1 - a*a);
 
     #Calculate point p, where the line through the circle intersection points crosses the line between the circle centers.  
 
-    x = LEFT_STEPPER_POS[0] + (a/d)*( RIGHT_STEPPER_POS[0] - LEFT_STEPPER_POS[0] );
-    y = LEFT_STEPPER_POS[1] + (a/d)*( RIGHT_STEPPER_POS[1] - LEFT_STEPPER_POS[1] );
+    x = LEFT_STEPPER_POS[0] + (a/d)*( RIGHT_STEPPER_POS[0] - LEFT_STEPPER_POS[0] )
+    y = LEFT_STEPPER_POS[1] + (a/d)*( RIGHT_STEPPER_POS[1] - LEFT_STEPPER_POS[1] )
 
     #1 soln , circles are touching
     if d == l1 + l2:
@@ -258,7 +258,6 @@ class Composition:
         f =open(filename,"w")
         for layer in self.layers:
             for line in layer.data:
-                #self.toData() reverts certain lines thisis already
                 # done in save assuming save is called before savetojsonblob 
                 f.write(json.dumps(line)+"\n")
         f.close()                   
