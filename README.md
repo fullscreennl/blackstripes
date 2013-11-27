@@ -1,4 +1,4 @@
-blackstripes
+Blackstripes
 ============
 
 blackstripes drawing machines
