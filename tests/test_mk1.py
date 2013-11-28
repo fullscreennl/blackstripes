@@ -55,8 +55,8 @@ class outputTest(unittest.TestCase):
                 print "comparing "+f+" OK"
 
     def testOutput(self):
-        reference = self.generate("reference")
-        testcase = self.generate("testcase")
+        reference = self.generate("mk1_reference")
+        testcase = self.generate("mk1_testcase")
         self.compare(reference,testcase)
 
         
