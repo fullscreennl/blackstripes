@@ -25,7 +25,7 @@ class outputTest(unittest.TestCase):
         
         needsDataGeneration = 1
         try:
-            os.makedirs(basepath+"/temp")
+            os.makedirs(basepath+"temp")
         except OSError,err:
             if err.errno != 17:
                 #dir exsists
