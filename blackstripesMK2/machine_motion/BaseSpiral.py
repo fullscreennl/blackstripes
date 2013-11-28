@@ -20,7 +20,8 @@ class BaseSpiral:
             """
         raise Exception(msg)
 
-    def __init__(self,s,nib_size_mm=0.5):
+    def __init__(self,s,nib_size_mm=0.5,base_path=""):
+        self.base_path = base_path
         self.configure()
         self.center = (500,500)
         self.s = s
@@ -41,7 +42,7 @@ class BaseSpiral:
 
     def sign(self):
         import json
-        f = open("assets/signature_data.json","r") 
+        f = open(self.base_path+"assets/signature_data.json","r") 
         data = json.loads(f.read())
 
         self.s.releaseMoveMode()

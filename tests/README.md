@@ -1,4 +1,4 @@
-test_mk1
+test_mk1 and test_mk2
 ============
 
 This test is used for improving working code.
@@ -9,4 +9,5 @@ The test will create a reference data set, so it should be run before refactorin
 	3) refactor / optimize
 	4) run the test, this will now only create the testcase and compare the machine instruction to the reference data. The test will fail if the data is not the same.
 	5) if the test passes push data to master
+	6) we can now run the new code without distroying the machine
 
