@@ -10,7 +10,6 @@ class Printer:
     # 400 khz max MINDELAY = 0.00000125
     #MINDELAY = 0.000002
     MINDELAY = 1 #cycles in wait loop (BUSY WAIT)
-    delays = []
     
     EASE_SIZE = 20 #equals 20 mm canvas space
     # tested to work MINDELAY = 0.0001
@@ -24,9 +23,10 @@ class Printer:
         
         print 'delays',self.delays  
     
-    def __init__(self,file_base_name):
-    
-        self.rawOutput = open('layer0.dat', 'w')
+    def __init__(self,output_path = ""):
+        self.delays = []
+        self.output_path = output_path
+        self.rawOutput = open(self.output_path+'layer0.dat', 'w')
         self.layercounter = 0
         L_clk = 5   #header pin 5 
         L_dir = 3   #header pin 3 
@@ -42,7 +42,7 @@ class Printer:
     def saveLayer(self):
         self.finalize();
         self.layercounter +=1
-        self.rawOutput = open('layer'+str(self.layercounter)+'.dat', 'w')
+        self.rawOutput = open(self.output_path+'layer'+str(self.layercounter)+'.dat', 'w')
 
     def printBatch(self, cmds, currentIndex, totalLength):
         if((totalLength - currentIndex) < currentIndex):

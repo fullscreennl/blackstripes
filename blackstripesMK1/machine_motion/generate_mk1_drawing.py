@@ -1,7 +1,12 @@
+import builder
+import driver
+import sys, os
+import zipfile
+
 class OrderProcessor:
 
     def __init__(self,order):
-        self.filename = order = str(order)
+        self.filename = order = os.path.basename(str(order))
         data = order.split(".")[0].split("_")
         self.orderid = data[0]
         self.basePath = "generated_data/"+self.orderid+"/"
@@ -11,14 +16,11 @@ class OrderProcessor:
             self.levels.append(int(l))
             
         if len(self.levels) < 4:
-            print "to few levels!"
-            os._exit(1)
+            raise Exception("to few levels!")
         if len(self.levels) > 4:
-            print "to many levels!"
-            os._exit(1)
+            raise Exception("to many levels!")
         if ".png" not in self.filename:
-            print "no .png file!"
-            os._exit(1)
+            raise Exception( "no .png file!")
 
 
     def getFileName(self):
@@ -33,13 +35,11 @@ class OrderProcessor:
     def getBasePath(self):
         return self.basePath
 
+    def getReferenceSetBasePath(self,fake_order_id = ""):
+        return "generated_data/"+fake_order_id+"/"
+
 
 if __name__ == '__main__':
-    import builder
-    import driver
-    import sys, os
-    import zipfile
-
     order = sys.argv[1]
     job = OrderProcessor(order)
     filename = job.getFileName()

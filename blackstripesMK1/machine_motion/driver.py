@@ -1,13 +1,15 @@
 import json
 import math
+import os
 
 from printer import Printer
 from machine_settings import *
 
 class Driver:
 
-    def __init__(self,file):
+    def __init__(self,file,tempdir=""):
         self.file = file
+        self.tempdir = tempdir
         self.f = open(file+"_sep.json","r")
         print 'opening file: ',file
 
@@ -15,7 +17,7 @@ class Driver:
         self.left_accumulator = 0.0
         self.right_accumulator = 0.0
         self.up_accumulator = 0.0
-        printer = Printer(self.file)
+        printer = Printer(self.tempdir)
         #printer.executeInstruction([0,0,-1],0)
         if lineToStart==0  or start ==0:
             l,r = g_NullPosition
