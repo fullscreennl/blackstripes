@@ -5,13 +5,13 @@ import traceback
 
 from machine_settings import *
 
-def posFromElbows(leftElbow,rightElbow):
+def posFromElbows(leftelbow,rightelbow):
         
-    xleft = leftElbow[0]
-    xright = rightElbow[0]
+    xleft = leftelbow[0]
+    xright = rightelbow[0]
     deltax = xright - xleft
-    h1 = leftElbow[1]
-    h2 = rightElbow[1]
+    h1 = leftelbow[1]
+    h2 = rightelbow[1]
     deltay = h1 - h2
     
     l1 = l2 = LOWER_ARM_LENGTH
@@ -111,24 +111,24 @@ class Blackstripes_MKII:
         
         offset = SHOULDER_DIST / 2.0;
                 
-        self.leftShoulder = left_axis = LEFT_SHOULDER_POS
-        self.rightShoulder = right_axis = RIGHT_SHOULDER_POS
+        self.leftshoulder = left_axis = LEFT_SHOULDER_POS
+        self.rightshoulder = right_axis = RIGHT_SHOULDER_POS
         
         self.angles = []
-        self.moveMode = 0
+        self.movemode = 0
 
     #inBoundsFunction should return false if out of bounds
     def setBoundsFunction(self,inBoundsFunction):
         self.inBounds = inBoundsFunction
 
     def setMoveMode(self):
-        self.moveMode = 1
+        self.movemode = 1
 
     def releaseMoveMode(self):
-        self.moveMode = 0
+        self.movemode = 0
         
-    def setEven(self,isEven):
-        self.even = isEven
+    def setEven(self,is_even):
+        self.even = is_even
             
     def getAngles(self):
         return self.angles
@@ -144,8 +144,8 @@ class Blackstripes_MKII:
         left = round(left / ANGLE_PER_STEP) * ANGLE_PER_STEP
         right = round(right / ANGLE_PER_STEP) * ANGLE_PER_STEP
 
-        left_axis = self.leftShoulder
-        right_axis = self.rightShoulder
+        left_axis = self.leftshoulder
+        right_axis = self.rightshoulder
         
         lx = math.cos(self.radians(left)) * UPPER_ARM_LENGTH + left_axis[0];
         ly = math.sin(self.radians(left)) * UPPER_ARM_LENGTH + left_axis[1];
@@ -155,19 +155,19 @@ class Blackstripes_MKII:
         
         markerx, markery =  posFromElbows((lx,ly),(rx,ry))
         
-        angleInRadLeft = math.atan2(markery - ly, markerx - lx)
+        angle_in_rad_left = math.atan2(markery - ly, markerx - lx)
 
-        mx1 = math.cos(angleInRadLeft) * (LOWER_ARM_LENGTH + EXENSION1) + lx;
-        my1 = math.sin(angleInRadLeft) * (LOWER_ARM_LENGTH + EXENSION1) + ly;
+        mx1 = math.cos(angle_in_rad_left) * (LOWER_ARM_LENGTH + EXENSION1) + lx;
+        my1 = math.sin(angle_in_rad_left) * (LOWER_ARM_LENGTH + EXENSION1) + ly;
         
-        mx2 = math.cos(angleInRadLeft) * (LOWER_ARM_LENGTH + EXENSION2) + lx;
-        my2 = math.sin(angleInRadLeft) * (LOWER_ARM_LENGTH + EXENSION2) + ly;
+        mx2 = math.cos(angle_in_rad_left) * (LOWER_ARM_LENGTH + EXENSION2) + lx;
+        my2 = math.sin(angle_in_rad_left) * (LOWER_ARM_LENGTH + EXENSION2) + ly;
 
         offset_3rd_marker = 1.04719755     #60 deg in radians
         bearing_space = 28.0        #bearings are 28mm diam.
         
-        mx3 = math.cos(offset_3rd_marker+angleInRadLeft) * bearing_space + mx1;
-        my3 = math.sin(offset_3rd_marker+angleInRadLeft) * bearing_space + my1;
+        mx3 = math.cos(offset_3rd_marker+angle_in_rad_left) * bearing_space + mx1;
+        my3 = math.sin(offset_3rd_marker+angle_in_rad_left) * bearing_space + my1;
 
         return (mx1,my1,mx2,my2,mx3,my3)
 
@@ -200,7 +200,7 @@ class Blackstripes_MKII:
         level2 = 999
         level3 = 999
                 
-        if not self.moveMode:
+        if not self.movemode:
             draw1 = self.getPixelIndexFromXY(layer1_level)
             draw2 = self.getPixelIndexFromXY(layer2_level)
             draw3 = self.getPixelIndexFromXY(layer3_level)
@@ -289,43 +289,43 @@ class Blackstripes_MKII:
         
     def drawStateFromXY(self,x,y,mode=1):
     
-        lsx, lsy = self.leftShoulder
-        rsx, rsy = self.rightShoulder
+        lsx, lsy = self.leftshoulder
+        rsx, rsy = self.rightshoulder
         
-        #angleInDegreesLeft = math.atan2(y - lsy, x - lsx)
+        #angle_in_degrees_left = math.atan2(y - lsy, x - lsx)
         
         leftpoints = findCircleCircleIntersections(x,y,LOWER_ARM_LENGTH + EXENSION1,lsx,lsy,UPPER_ARM_LENGTH)
         if len(leftpoints) > 1:
             if leftpoints[0][0] < leftpoints[1][0]:
-                leftElbow = leftpoints[0]
+                leftelbow = leftpoints[0]
             else:
-                leftElbow = leftpoints[1]
+                leftelbow = leftpoints[1]
                 
-        x2,y2 = leftElbow
-        angleInDegreesLeft = math.atan2(y2 - lsy, x2 - lsx) * 180.0 / math.pi
-        angleInRadLeft = math.atan2(y - y2, x - x2)
+        x2,y2 = leftelbow
+        angle_in_degrees_left = math.atan2(y2 - lsy, x2 - lsx) * 180.0 / math.pi
+        angle_in_rad_left = math.atan2(y - y2, x - x2)
         
-        mx = math.cos(angleInRadLeft) * (LOWER_ARM_LENGTH) + x2;
-        my = math.sin(angleInRadLeft) * (LOWER_ARM_LENGTH) + y2;
+        mx = math.cos(angle_in_rad_left) * (LOWER_ARM_LENGTH) + x2;
+        my = math.sin(angle_in_rad_left) * (LOWER_ARM_LENGTH) + y2;
             
         rightpoints = findCircleCircleIntersections(mx,my,LOWER_ARM_LENGTH,rsx,rsy,UPPER_ARM_LENGTH)
         if len(rightpoints) > 1:
             if rightpoints[0][0] > rightpoints[1][0]:
-                rightElbow = rightpoints[0]
+                rightelbow = rightpoints[0]
             else:
-                rightElbow = rightpoints[1]
+                rightelbow = rightpoints[1]
                 
-        x2,y2 = rightElbow
-        angleInDegreesRight = math.atan2(y2 - rsy, x2 - rsx) * 180.0 / math.pi
+        x2,y2 = rightelbow
+        angle_in_degrees_right = math.atan2(y2 - rsy, x2 - rsx) * 180.0 / math.pi
         
-        angleInDegreesLeft = angleInDegreesLeft + 90.0 + 180.0 
-        angleInDegreesLeft = round(angleInDegreesLeft,4)%360.0
-        angleInDegreesRight = -angleInDegreesRight + 90.0
-        angleInDegreesRight = round(angleInDegreesRight,4)%360.0
+        angle_in_degrees_left = angle_in_degrees_left + 90.0 + 180.0 
+        angle_in_degrees_left = round(angle_in_degrees_left,4)%360.0
+        angle_in_degrees_right = -angle_in_degrees_right + 90.0
+        angle_in_degrees_right = round(angle_in_degrees_right,4)%360.0
 
         if mode == 1:
-            self.drawWithAngles(angleInDegreesLeft,angleInDegreesRight)
-        return (angleInDegreesLeft,angleInDegreesRight)
+            self.drawWithAngles(angle_in_degrees_left,angle_in_degrees_right)
+        return (angle_in_degrees_left,angle_in_degrees_right)
         
     def write(self,msg):
         print msg

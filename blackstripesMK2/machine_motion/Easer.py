@@ -6,7 +6,7 @@ class Easer:
 
     def __init__(self,filename,output_filename ="motiondata"):
     
-        self.TXT_VERSION = 1
+        self.TXT_VERSION = 0
         
         print "-> reading input file .."
     

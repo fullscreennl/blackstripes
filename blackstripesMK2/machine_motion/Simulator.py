@@ -20,12 +20,12 @@ class Progress:
 
 class Simulator:
 
-    def __init__(self,motiondata,imagedata,numInstructions=None):
+    def __init__(self,motiondata,imagedata,num_instruction=None):
 
         self.leftangle = 90
         self.rightangle = 90
 
-        self.progressUI = Progress()
+        self.progress_ui = Progress()
 
         self.prev_x = -1
         self.prev_y = -1
@@ -44,8 +44,8 @@ class Simulator:
 
         self.model = Blackstripes_MKII()
 
-        self.instructionsExecuted = 0.0
-        self.numInstructions = float(numInstructions)
+        self.instructions_executed = 0.0
+        self.num_instruction = float(num_instruction)
 
         self.pixels = []
         self.imagedata = open(imagedata,'rb')
@@ -89,12 +89,12 @@ class Simulator:
 
     def _draw(self,left_engine,right_engine,p1,p2,p3,even,speed,sol1,sol2,sol3):
 
-        self.instructionsExecuted += 1
-        progress = (self.instructionsExecuted / self.numInstructions) * 100.0
+        self.instructions_executed += 1
+        progress = (self.instructions_executed / self.num_instruction) * 100.0
 
         if self.progress != int(round(progress)):
             self.progress = int(round(progress))
-            self.progressUI.setProgress(self.progress)
+            self.progress_ui.setProgress(self.progress)
 
         if left_engine < 1:
             self.leftangle -= ANGLE_PER_STEP

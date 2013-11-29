@@ -98,12 +98,12 @@ def spaceArray(arr,target_length):
         return [1 for i in range(abs(target_length))]
     numspaces = target_length - l
     space_width = float(numspaces) / float(l)
-    _space_width = int(math.floor(space_width))
-    remain = target_length - (_space_width+1)*l
-    space_arr = [1 for i in range(abs(_space_width))]
+    floored_space_width = int(math.floor(space_width))
+    remain = target_length - (floored_space_width+1)*l
+    space_arr = [1 for i in range(abs(floored_space_width))]
     remain_arr = [1 for i in range(abs(remain))]
 
-    if _space_width == 0:
+    if floored_space_width == 0:
         spreadfactor = int(math.floor(float(l) / float(remain)))
         counter = 0
         remaincounter = 0
