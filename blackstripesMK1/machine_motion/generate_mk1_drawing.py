@@ -9,7 +9,7 @@ class OrderProcessor:
         self.filename = order = os.path.basename(str(order))
         data = order.split(".")[0].split("_")
         self.orderid = data[0]
-        self.basePath = "generated_data/"+self.orderid+"/"
+        self.basepath = "generated_data/"+self.orderid+"/"
         self.levels = []
         levels_strings = data[1:]
         for l in levels_strings:
@@ -33,7 +33,7 @@ class OrderProcessor:
         return self.levels
         
     def getBasePath(self):
-        return self.basePath
+        return self.basepath
 
     def getReferenceSetBasePath(self,fake_order_id = ""):
         return "generated_data/"+fake_order_id+"/"

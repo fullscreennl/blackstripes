@@ -26,30 +26,30 @@ class Printer:
     def __init__(self,output_path = ""):
         self.delays = []
         self.output_path = output_path
-        self.rawOutput = open(self.output_path+'layer0.dat', 'w')
+        self.rawoutput = open(self.output_path+'layer0.dat', 'w')
         self.layercounter = 0
         L_clk = 5   #header pin 5 
         L_dir = 3   #header pin 3 
         R_dir = 7   #header pin 7
         R_clk  = 8   #header pin 8
         Solenoid = 10  #header pin 10
-        self.leftChannel = [L_clk, L_dir]
-        self.rightChannel = [R_clk,R_dir]
-        self.printerHead = [Solenoid]
+        self.leftchannel = [L_clk, L_dir]
+        self.rightchannel = [R_clk,R_dir]
+        self.printerhead = [Solenoid]
         self.lastdirs =[0,0]
         self.calculateDelays()  
         
     def saveLayer(self):
         self.finalize();
         self.layercounter +=1
-        self.rawOutput = open(self.output_path+'layer'+str(self.layercounter)+'.dat', 'w')
+        self.rawoutput = open(self.output_path+'layer'+str(self.layercounter)+'.dat', 'w')
 
-    def printBatch(self, cmds, currentIndex, totalLength):
-        if((totalLength - currentIndex) < currentIndex):
-            delta = totalLength - currentIndex
+    def printBatch(self, cmds, currentindex, totallength):
+        if((totallength - currentindex) < currentindex):
+            delta = totallength - currentindex
         else:
-            delta = currentIndex
-        # currentIndex is which mm in a total line of length totalLength
+            delta = currentindex
+        # currentindex is which mm in a total line of length totallength
         # cmds is all python generated from json stepping instructions to move a single mm on canvas
         
         # for long sweeps between layers speed remains low there is only one instruction currentindex = 0 for the whole sweep
@@ -73,8 +73,8 @@ class Printer:
                 self.logCmdsToFile(cmd, delta)  
     
     def logCmdsToFile(self,cmd,delta):
-        self.rawOutput.write(str(cmd[0])+','+str(cmd[1])+','+str(cmd[2])+','+str(delta)+'\n')
+        self.rawoutput.write(str(cmd[0])+','+str(cmd[1])+','+str(cmd[2])+','+str(delta)+'\n')
         
     def finalize(self):
-        self.rawOutput.close() 
+        self.rawoutput.close() 
     

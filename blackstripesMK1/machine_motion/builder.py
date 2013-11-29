@@ -73,10 +73,10 @@ def posFromLengths(l1,l2):
 
 class Builder:
 
-    def __init__(self,inputImage):
-        #self.jabname = inputImage
-        self.inputImage = Image.open(inputImage)
-        self.inputImage = self.inputImage.resize(CANVAS_SIZE,Image.BICUBIC)
+    def __init__(self,input_image):
+        #self.jabname = input_image
+        self.input_image = Image.open(input_image)
+        self.input_image = self.input_image.resize(CANVAS_SIZE,Image.BICUBIC)
         
     def doDraw(self,pos3,**kwargs):
         pos3 = posFromLengths(pos3[0],pos3[1])
@@ -84,7 +84,7 @@ class Builder:
         x = int(math.floor(x))-g_Offset
         y = int(math.floor(y))-g_Offset
         try:
-            level = self.inputImage.getpixel((x,y))[0]
+            level = self.input_image.getpixel((x,y))[0]
         except:
             return -1 #different handling per layer
         if pos3:
@@ -115,7 +115,7 @@ class Builder:
             offset = offset*LINE_SPACING
             bl1,bl2 = lengthFromPos(-PADDING + offset, g_Offset)
             el1,el2 = lengthFromPos(g_MachineWidth-g_Offset, g_MachineWidth +PADDING- offset)
-            dotFound = False
+            dot_found = False
             for d in range(int(round(el1 - bl1))):
                 x,y = posFromLengths(bl1 + d, el2)
                 if x > g_Offset and y < g_MachineWidth - g_Offset:
@@ -124,8 +124,8 @@ class Builder:
                     if up > -1:
                         line.addDot((bl1+d,el2,up))
                     if up==1:
-                        dotFound = True
-            if dotFound:
+                        dot_found = True
+            if dot_found:
                 layer1.addLine(line)
         layer1.addLine("layer1 end")        
         comp.addLayer(layer1)
@@ -140,7 +140,7 @@ class Builder:
             offset = offset*LINE_SPACING
             bl1,bl2 = lengthFromPos(g_MachineWidth+PADDING - offset,g_Offset)
             el1,el2 = lengthFromPos(g_Offset,g_MachineWidth+PADDING- offset)
-            dotFound = False
+            dot_found = False
             for d in range(int(round(el2-bl2))):
                 x,y = posFromLengths(bl1,bl2+d)
                 if x > g_Offset and y < g_MachineWidth - g_Offset:
@@ -149,8 +149,8 @@ class Builder:
                     if up > -1:
                         line.addDot((bl1,bl2+d,up))
                     if up==1:
-                        dotFound = True
-            if dotFound:
+                        dot_found = True
+            if dot_found:
                 layer2.addLine(line)
         layer2.addLine("layer2 end")        
         comp.addLayer(layer2)
@@ -173,7 +173,7 @@ class Builder:
             #endpoint
             x2,y2 = g_MachineWidth-g_Offset,g_Offset+offset
             l2,r2 = lengthFromPos(x2,y2)
-            dotFound = False
+            dot_found = False
             for d in range(int(round(r - r2))):
                 x,y = posFromLengths(r-d, l+d)
                 if x > g_Offset and y < g_MachineWidth and y > g_Offset:
@@ -182,8 +182,8 @@ class Builder:
                         up = 0
                     line.addDot((r-d,l+d,up))
                     if up==1:
-                        dotFound = True
-            if dotFound:
+                        dot_found = True
+            if dot_found:
                 layer3.addLine(line)
         layer3.addLine("layer3 end")        
         comp.addLayer(layer3)
@@ -203,7 +203,7 @@ class Builder:
             #endpoint
             x2,y2 = g_Offset+offset,g_MachineWidth - g_Offset
             l2,r2 = lengthFromPos(x2,y2)
-            dotFound = False
+            dot_found = False
             #print 'calculated range: ',round(r2-r),round(l2-l)
             for d in range(max(int(round(r2-r)),int(round(l2-l)))):
                 x,y = posFromLengths(r+d, l+d)
@@ -213,8 +213,8 @@ class Builder:
                         up = 0
                     line.addDot((r+d, l+d,up))
                     if up==1:
-                        dotFound = True
-            if dotFound:
+                        dot_found = True
+            if dot_found:
                 layer4.addLine(line)
         
         l,r = lengthFromPos(g_Offset + CANVAS_SIZE[0]-180,g_Offset+CANVAS_SIZE[1]+50)
@@ -317,7 +317,7 @@ class OrderProcessor:
         self.filename = order = str(order)
         data = order.split(".")[0].split("_")
         self.orderid = data[0]
-        self.basePath = "generated_data/"+self.orderid+"/"
+        self.basepath = "generated_data/"+self.orderid+"/"
         self.levels = []
         levels_strings = data[1:]
         for l in levels_strings:
@@ -343,15 +343,15 @@ class OrderProcessor:
     def getLevels(self):
         return self.levels
         
-    def getBasePath(self):
-        return self.basePath
+    def getbasepath(self):
+        return self.basepath
 
 
 if __name__ == '__main__':
     order = 'testies_210_180_120_50.png'
     job = OrderProcessor(order)
     filename = job.getFileName()
-    basepath = job.getBasePath()
+    basepath = job.getbasepath()
     levels = job.getLevels()
     order_id = job.getOrderId() 
     

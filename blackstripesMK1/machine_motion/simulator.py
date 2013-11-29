@@ -56,8 +56,8 @@ class SimuDriver(Driver):
     def __init__(self,file):
         self.file_base_name = file
         f = open(self.file_base_name+".json","r")
-        jsonString = f.read()
-        self.data = json.loads(jsonString)
+        jsonstring = f.read()
+        self.data = json.loads(jsonstring)
         print 'json loaded: ',self.file_base_name+".json"
         
     def simulate(self):
