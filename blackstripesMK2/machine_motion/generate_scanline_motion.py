@@ -3,10 +3,10 @@ if __name__ == "__main__":
     import os
 
     from machine_settings import *
-    from Generator import Generator
-    from Easer import Easer
-    from Model import Blackstripes_MKII
-    from ScanLines import ScanLines
+    from generator import Generator
+    from easer import Easer
+    from model import Blackstripes_MKII
+    from scanLines import ScanLines
 
     m = Blackstripes_MKII()
     ScanLines(m,MARKER_NIB_SIZE_MM)

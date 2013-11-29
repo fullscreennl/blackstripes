@@ -1,8 +1,8 @@
 
 import struct
-import Coder
+import coder
 from machine_settings import *
-from Model import Blackstripes_MKII
+from model import Blackstripes_MKII
 import Image,ImageDraw
 import sys
 
@@ -63,7 +63,7 @@ class Simulator:
             byte = self.motiondata.read(16)
             while byte != "":
                 sample = struct.unpack('=LLLL',byte)
-                left_engine,right_engine,p1,p2,p3,even,speed = Coder.decode(sample[0])
+                left_engine,right_engine,p1,p2,p3,even,speed = coder.decode(sample[0])
                 sol1 = sample[1]
                 sol2 = sample[2] 
                 sol3 = sample[3]

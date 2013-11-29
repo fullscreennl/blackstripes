@@ -1,4 +1,4 @@
-import Coder
+import coder
 import struct
 
 class Easer:
@@ -107,7 +107,7 @@ class Easer:
                 even = int(elems[8])
                 speed = int(resulting_speed_array[linecounter])
 
-                SAMPLE = struct.pack('=LLLL',Coder.encode(left_engine,right_engine,p1,p2,p3,even,speed),sol1,sol2,sol3)
+                SAMPLE = struct.pack('=LLLL',coder.encode(left_engine,right_engine,p1,p2,p3,even,speed),sol1,sol2,sol3)
                 binfile.write(SAMPLE)
                 
                 if self.TXT_VERSION:

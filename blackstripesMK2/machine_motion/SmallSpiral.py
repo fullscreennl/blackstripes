@@ -1,8 +1,8 @@
 import math
 from machine_settings import *
-import BaseSpiral
+import baseSpiral
 
-class SmallSpiral(BaseSpiral.BaseSpiral):
+class SmallSpiral(baseSpiral.BaseSpiral):
 
     def configure(self):
         self.radius = 489.0
