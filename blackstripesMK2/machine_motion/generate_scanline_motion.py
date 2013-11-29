@@ -6,7 +6,7 @@ if __name__ == "__main__":
     from generator import Generator
     from easer import Easer
     from model import Blackstripes_MKII
-    from scanLines import ScanLines
+    from scanlines import ScanLines
 
     m = Blackstripes_MKII()
     ScanLines(m,MARKER_NIB_SIZE_MM)

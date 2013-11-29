@@ -7,7 +7,7 @@ if __name__ == "__main__":
     from easer import Easer
     from model import Blackstripes_MKII
     #small spiral fits on cardboard panel
-    from smallSpiral import SmallSpiral
+    from smallspiral import SmallSpiral
     from spiral import Spiral
 
     m = Blackstripes_MKII()
