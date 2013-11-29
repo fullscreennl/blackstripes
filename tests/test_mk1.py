@@ -42,7 +42,7 @@ class outputTest(unittest.TestCase):
             start = 0
             drivr.run(int(linenr),start)
         else:
-            print "skip"
+            print "reference data mk1 found"
 
         return tempPath
 

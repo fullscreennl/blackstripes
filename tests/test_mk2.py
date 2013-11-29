@@ -7,7 +7,7 @@ from generator import Generator
 from easer import Easer
 from model import Blackstripes_MKII
 #small spiral fits on cardboard panel
-from smallSpiral import SmallSpiral
+from smallspiral import SmallSpiral
 from spiral import Spiral
 
 import filecmp
@@ -37,6 +37,8 @@ class outputTest(unittest.TestCase):
             Generator(m,temp_file)
             Easer(temp_file,output_filename ="generated_data/"+_id+"/spiral")
             os.remove(temp_file)
+        else:
+            print "reference data mk2 found"
 
         return "generated_data/"+_id+"/spiral.bin"
 
