@@ -22,6 +22,8 @@ class Simulator:
 
     def __init__(self,motiondata,imagedata,num_instruction=None):
 
+        self.pixels = None
+
         self.leftangle = 90
         self.rightangle = 90
 
@@ -47,16 +49,17 @@ class Simulator:
         self.instructions_executed = 0.0
         self.num_instruction = float(num_instruction)
 
-        self.pixels = []
-        self.imagedata = open(imagedata,'rb')
-        try:
-            byte = self.imagedata.read(1)
-            while byte != "":
-                sample = struct.unpack('B',byte)
-                self.pixels.append(sample[0])
+        if imagedata != None:
+            self.pixels = []
+            self.imagedata = open(imagedata,'rb')
+            try:
                 byte = self.imagedata.read(1)
-        finally:
-            self.imagedata.close()
+                while byte != "":
+                    sample = struct.unpack('B',byte)
+                    self.pixels.append(sample[0])
+                    byte = self.imagedata.read(1)
+            finally:
+                self.imagedata.close()
 
         self.motiondata = open(motiondata,'rb')
         try:
@@ -79,7 +82,7 @@ class Simulator:
         x = x*PIX_PER_MM
         y = y*PIX_PER_MM
         pix = (x-HALF_MARKER_PIXEL_SIZE,y-HALF_MARKER_PIXEL_SIZE,x+HALF_MARKER_PIXEL_SIZE,y+HALF_MARKER_PIXEL_SIZE)
-        if p == 1:
+        if p == 1 and self.pixels:
             if sol < 1000000 and self.pixels[sol+6] < self.levels[levels_tup[0]] and even == 1:
                 draw.ellipse(pix, fill=color)
             elif sol < 1000000 and self.pixels[sol+6] < self.levels[levels_tup[1]] and even == 0:
