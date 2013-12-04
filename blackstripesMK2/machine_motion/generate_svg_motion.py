@@ -10,19 +10,26 @@ class VectorDrawing:
         self.base_path = base_path
         self.s.setBoundsFunction(self.inCanvas)
 
-        self.signature_pos = (770,880)
+        self.signature_pos = (770,980)
         self.start = (100,100)
 
         doc = minidom.parse(svg_filename)
 
-        path_strings = [(path.getAttribute('stroke') != "red",path.getAttribute('points')) for path in doc.getElementsByTagName('polygon')]
+        path_strings = [(path.getAttribute('stroke') != "red",path.getAttribute('points'),"polygon") for path in doc.getElementsByTagName('polygon')]
+        path_strings += [(path.getAttribute('stroke') != "red",path.getAttribute('points'),"polyline") for path in doc.getElementsByTagName('polyline')]
+        path_strings += [self.lineToPathString(path) for path in doc.getElementsByTagName('line')]
+
         self.paths = []
         for pstr in path_strings:
             if pstr[0]:
-                self.paths.append(pstr[1])
+                self.paths.append((pstr[1],pstr[2]))
         doc.unlink()  
 
         self.generate()
+
+    def lineToPathString(self,line_xml):
+        path_string = u"%s,%s %s,%s"%(line_xml.getAttribute('x1'),line_xml.getAttribute('y1'),line_xml.getAttribute('x2'),line_xml.getAttribute('y2')) 
+        return (line_xml.getAttribute('stroke') != "red",path_string,"line")
 
     def inCanvas(self,x,y):
         return 1
@@ -50,7 +57,7 @@ class VectorDrawing:
     def translate(self,coord):
         return float(coord[0]) / SVG_UNITS_TO_MM_RATIO, -( float(coord[1]) / SVG_UNITS_TO_MM_RATIO )  + 1000.0
 
-    def drawPath(self,path_string):
+    def drawPath(self,path_string,should_close=False):
         self.s.setMoveMode()
         start_coord = self.translate(path_string.split(" ")[0].split(","))
         self.s.drawVectorFromTo(self.prev_coord, start_coord,-1,beginspeed=0,endspeed=0)
@@ -62,13 +69,14 @@ class VectorDrawing:
                 _coord = self.translate(coord)
                 self.s.drawVectorFromTo(self.prev_coord, _coord,1,beginspeed=0,endspeed=0)
                 self.prev_coord = _coord
-        self.s.drawVectorFromTo(self.prev_coord, start_coord,1,beginspeed=0,endspeed=0)
-        self.prev_coord = start_coord
+        if should_close:
+            self.s.drawVectorFromTo(self.prev_coord, start_coord,1,beginspeed=0,endspeed=0)
+            self.prev_coord = start_coord
 
     def generate(self): 
     
         self.s.setMoveMode()
-        start_pos = self.translate(self.paths[0].split(" ")[0].split(","))
+        start_pos = self.translate(self.paths[0][0].split(" ")[0].split(","))
         self.s.drawLineFromTo(HOME, start_pos,-1,beginspeed=0,endspeed=0)
         self.s.releaseMoveMode()
 
@@ -76,7 +84,7 @@ class VectorDrawing:
 
         self.s.beginLine(0,35,500)
         for p in self.paths:
-            self.drawPath(p)
+            self.drawPath(p[0],p[1] is "polygon")
         self.s.endLine(0,500)
 
         self.s.setMoveMode()

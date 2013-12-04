@@ -394,7 +394,7 @@ class Blackstripes_MKII:
         for step in range(numsteps):
             try:
                 a1,a2 = self.getStateFromXYonCanvas(l,r)
-                xy = self.appendAnglesWithMarkerProfile(a1,a2,(2,2,2))
+                xy = self.appendAnglesWithMarkerProfile(a1,a2,(2,0,0))
             except:
                 traceback.print_exc(file=self)
             l = l - leftstep
