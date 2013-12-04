@@ -362,7 +362,7 @@ class Blackstripes_MKII:
         l = startl
         r = startr
         
-        self.beginLine(beginspeed,300,20000)
+        self.beginLine(beginspeed,499,2000)
         
         for step in range(numsteps):
             try:
