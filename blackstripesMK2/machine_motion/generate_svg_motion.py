@@ -1,10 +1,32 @@
 from xml.dom import minidom
+from subprocess import Popen
+import os
+import string
 
 SVG_UNITS_TO_MM_RATIO = 2693.4 / 950.0 #142.23/50.000000
 
 class VectorDrawing:
 
-    def __init__(self,s,nib_size_mm=0.5,base_path="",svg_filename=None):
+    def __init__(self,s,nib_size_mm=0.5,base_path="",input_filename=None):
+
+        svg_filename = None
+        if ".eps" in input_filename:
+
+            svg_filename = input_filename.replace(".eps",".svg")
+
+            command = ["pstoedit -f plot-svg",input_filename,svg_filename,"-nc"]
+            command = string.join(command)
+
+            try:
+                pstoedit = os.popen(command, "r")
+                status = pstoedit.close()
+                if status:
+                    raise IOError("pstoedit failed (status %d)" % status)
+            except: 
+                raise Exception("oops, can not convert eps file")
+
+        else:
+            svg_filename = input_filename
 
         self.s = s
         self.base_path = base_path
@@ -111,7 +133,7 @@ if __name__ == "__main__":
     from simulator import Simulator
 
     m = Blackstripes_MKII()
-    VectorDrawing(m,MARKER_NIB_SIZE_MM,"","test_drawing.svg")
+    VectorDrawing(m,MARKER_NIB_SIZE_MM,"","test_drawing.eps")
     Generator(m,"data.tmp")
     Easer("data.tmp",output_filename ="svg_drawing")
     os.remove("data.tmp")
