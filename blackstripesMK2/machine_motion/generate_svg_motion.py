@@ -32,7 +32,7 @@ class VectorDrawing:
         self.base_path = base_path
         self.s.setBoundsFunction(self.inCanvas)
 
-        self.signature_pos = (770,980)
+        self.signature_pos = (750,917)
         self.start = (100,100)
 
         doc = minidom.parse(svg_filename)
@@ -139,4 +139,6 @@ if __name__ == "__main__":
     os.remove("data.tmp")
 
     Simulator("svg_drawing.bin",None,8000000)
+
+    print "scp svg_drawing.bin rpi@192.168.0.102:/home/rpi/blackstripes/svg_drawing.bin"
 
