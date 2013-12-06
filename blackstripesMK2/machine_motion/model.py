@@ -172,18 +172,7 @@ class Blackstripes_MKII:
         return (mx1,my1,mx2,my2,mx3,my3)
 
     def appendAngles(self,left,right):
-
-        leftval = left
-        rightval = right
-
-        mx1,my1,mx2,my2,mx3,my3 = self.calculateMarkerPositions(left,right)
-    
-        draw1 = 0
-        draw2 = 0
-        draw3 = 2
-                
-        self.angles.append((leftval,rightval,draw1,draw2,draw3,0,0,2,0))
-        return self.getXYonCanvas(mx1,my1)
+        return self.appendAnglesWithMarkerProfile(left,right,(0,0,2))
 
     def appendAnglesWithMarkerProfile(self,left,right,marker_profile=(2,2,2)):
 
