@@ -14,18 +14,3 @@ class SmallSpiral(basespiral.BaseSpiral):
         
 if __name__ == "__main__":
     pass
-    
-
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

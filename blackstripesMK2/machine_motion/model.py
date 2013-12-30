@@ -172,19 +172,23 @@ class Blackstripes_MKII:
         return (mx1,my1,mx2,my2,mx3,my3)
 
     def appendAngles(self,left,right):
+        return self.appendAnglesWithMarkerProfile(left,right,(0,0,2))
+
+    def appendAnglesWithMarkerProfile(self,left,right,marker_profile=(2,2,2)):
 
         leftval = left
         rightval = right
 
         mx1,my1,mx2,my2,mx3,my3 = self.calculateMarkerPositions(left,right)
-    
-        draw1 = 0
-        draw2 = 0
-        draw3 = 2
-                
-        self.angles.append((leftval,rightval,draw1,draw2,draw3,0,0,2,0))
+
+        if not self.movemode:
+            draw1,draw2,draw3 = marker_profile
+            self.angles.append((leftval,rightval,draw1,draw2,draw3,draw1,draw2,draw3,0))
+        else:
+            self.angles.append((leftval,rightval,0,0,0,0,0,0,0))
+
         return self.getXYonCanvas(mx1,my1)
-        
+
     def drawWithAngles(self,left, right,draw=0):
 
         leftval = left
@@ -359,11 +363,29 @@ class Blackstripes_MKII:
             
         self.endLine(endspeed,2000)
 
-
-
-
-if __name__ == "__main__":
-    pass
-
-
+    def drawVectorFromTo(self,start,end,draw,beginspeed=0,endspeed=0):
+        
+        numsteps = 1000
+        numspaces = float(numsteps-1)
     
+        startl, startr = start
+        endl, endr = end
+    
+        deltal = startl-endl
+        deltar = startr-endr
+        
+        leftstep = deltal/numspaces
+        rightstep = deltar/numspaces
+        
+        l = startl
+        r = startr
+        
+        for step in range(numsteps):
+            try:
+                a1,a2 = self.getStateFromXYonCanvas(l,r)
+                xy = self.appendAnglesWithMarkerProfile(a1,a2,(2,0,0))
+            except:
+                traceback.print_exc(file=self)
+            l = l - leftstep
+            r = r - rightstep
+            
