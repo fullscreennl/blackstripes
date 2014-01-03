@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 import Image
 import os
 
@@ -7,7 +7,7 @@ OUPUT_DIR = "output/"
 class OutputFolder:
     def __init__(self):
         try:
-            os.makedirs(OUPUT_DIR)
+            os.makedirs(OUPUT_DIR) 
         except:
             print "folder OK"
 
@@ -78,96 +78,116 @@ class Cropper:
             cr_count += 1
 
 
-class WebBasedPreviews:
+class ColorOptions:
 
+    colors = np.array([[0,0,0],[80,30,30],[255,0,0],[255,100,100],[170,170,170],[220,220,220],[255,255,255]])
+
+    levels = [([0, 0, 46, 82, 136, 172],"1"),
+                ([10, 28, 55, 73, 100, 118],"2"),
+                ([37, 46, 60, 69, 82, 91],"3"),
+                ([20, 56, 110, 146, 200, 236],"4"),
+                ([74, 92, 119, 137, 164, 182],"5"),
+                ([101, 110, 124, 133, 146, 155],"6"),
+                ([84, 120, 174, 210, 255, 255],"7"),
+                ([138, 156, 183, 201, 228, 246],"8"),
+                ([165, 174, 188, 197, 210, 219],"9")]
 
     def __init__(self,image_name):
-        self.image_name = image_name
-        self.gen()
-        self.combine()
-        
-    def gen(self):
-        self.level_data = []
-        im = Image.open(self.image_name).convert("L")
-        im = im.resize((250,250),Image.ANTIALIAS)
-        w,h = im.size
-        im_arr = numpy.asarray(im, numpy.uint8)
+        im = Image.open(image_name).convert("L")
+        self.numpy_im = np.asarray(im)
+        self.color_deltas = np.diff(self.colors,axis=0)
+        self.genPresets()
 
-        for image in range(51):
-            a = (im_arr > (image*(255/50.0))) * 255
-            a = numpy.uint8(a)
-            self.level_data.append(a)
+    def genPresets(self):
+        for l in self.levels:
+            self.preview(l)
+
+    def preview(self,levels):
+        r = self.numpy_im * 0
+        g = self.numpy_im * 0
+        b = self.numpy_im * 0
+        i = 0
+        for l in levels[0]:
+            cr = (self.numpy_im > l) * self.color_deltas[i][0]
+            cg = (self.numpy_im > l) * self.color_deltas[i][1]
+            cb = (self.numpy_im > l) * self.color_deltas[i][2]
+            r = r + cr
+            g = g + cg
+            b = b + cb
+            i += 1
+
+        a = np.dstack((r,g,b))
+        a = np.uint8(a)
+        t = Image.fromarray(a)
+        t.save(OUPUT_DIR+levels[1]+".png")
 
 
-    def combine(self,choice=25):
 
-        centers = [15,20,25,30,35]
-        contrast_settings = [1,2,3,4,5]
+class Preview:
 
-        for c in centers:
-            for cs in contrast_settings:
+    colors = np.array([[0,0,0],[80,30,30],[255,0,0],[255,100,100],[170,170,170],[220,220,220],[255,255,255]])
 
-                levels = [0]
-                levels.append(c-cs*3)
-                levels.append(c-cs*2)
-                levels.append(int(round(c-cs/2.0)))
-                levels.append(int(round(c+cs/2.0)))
-                levels.append(c+cs*2)
-                levels.append(c+cs*3)
+    levels = [([0, 0, 46, 82, 136, 172],"1"),
+                ([10, 28, 55, 73, 100, 118],"2"),
+                ([37, 46, 60, 69, 82, 91],"3"),
+                ([20, 56, 110, 146, 200, 236],"4"),
+                ([74, 92, 119, 137, 164, 182],"5"),
+                ([101, 110, 124, 133, 146, 155],"6"),
+                ([84, 120, 174, 210, 255, 255],"7"),
+                ([138, 156, 183, 201, 228, 246],"8"),
+                ([165, 174, 188, 197, 210, 219],"9")]
 
-                my_level_data = []
+    def __init__(self,image_name):
+        im = Image.open(image_name).convert("L").resize((1000,1000),Image.BICUBIC)
+        self.numpy_im = np.asarray(im)
+        self.color_deltas = np.diff(self.colors,axis=0)
+        self.loadMasks()
+        self.preview(self.levels[1])
 
-                print str(levels).strip("[]").replace(", ","_")
 
-                for l in levels:
-                    my_level_data.append(self.level_data[l])
+    def loadMasks(self):
+        im = Image.open("masks/black_even_mask.png").convert("L")
+        self.black_even_mask = np.asarray(im)
 
-                a = 0
-                counter = 0
-                for data in my_level_data:
-                    ld = (data == 0) *1
-                    counter += 1
-                    a = a + ld
 
-                colors = [
 
-                    (255,255,255),
-                    (220,220,220),
-                    (170,170,170),
-                    (255,100,100),
-                    (255,0,0),
-                    (80,30,30),
-                    (0,0,0)
+    def preview(self,levels):
+        r = self.numpy_im * 0
+        g = self.numpy_im * 0
+        b = self.numpy_im * 0
+        i = 0
+        for l in levels[0]:
+            cr = (self.numpy_im > l) * self.color_deltas[i][0]
+            cg = (self.numpy_im > l) * self.color_deltas[i][1]
+            cb = (self.numpy_im > l) * self.color_deltas[i][2]
 
-                ]
+            r = r + cr
+            g = g + cg
+            b = b + cb
 
-                _r = 0
-                _g = 0
-                _b = 0
-                counter = 0
-                for r in levels:
-                    __r = (a == counter) * colors[counter][0]
-                    __g = (a == counter) * colors[counter][1]
-                    __b = (a == counter) * colors[counter][2]
+            a = np.dstack((cr,cg,cb))
+            a = np.uint8(a)
+            t = Image.fromarray(a)
+            t.save("layer"+str(i)+".png")
 
-                    _r = _r + __r
-                    _g = _g + __g
-                    _b = _b + __b
+            i += 1
 
-                    counter += 1
+        a = np.dstack((r,g,b))
+        a = np.uint8(a)
+        t = Image.fromarray(a)
+        t.save("preview.png")
 
-                a = numpy.dstack((_r,_g,_b))
 
-                a = numpy.uint8(a)
-                t = Image.fromarray(a)
-                t.save(OUPUT_DIR+str(c)+"_"+str(cs)+".png")
+
+
+
 
 
 if __name__ == "__main__":
     OutputFolder()
-    #Cropper("photo.jpg","one")
-    Cropper("cliff-burton.jpg","image_crop")
-    WebBasedPreviews(OUPUT_DIR+"image_crop5.jpg")
+    #Cropper("jimi-hendrix.jpg","image_crop")
+    #ColorOptions(OUPUT_DIR+"image_crop1.jpg")
+    Preview(OUPUT_DIR+"image_crop1.jpg")
 
 
 
