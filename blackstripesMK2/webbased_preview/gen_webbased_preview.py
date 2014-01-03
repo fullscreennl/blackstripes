@@ -144,49 +144,51 @@ class Preview:
         self.loadMasks()
         self.preview(self.levels[1])
 
-
     def loadMasks(self):
-        im = Image.open("masks/black_even_mask.png").convert("L")
-        self.black_even_mask = np.asarray(im)
-
-
+        self.masks = []
+        im = Image.open("masks/black_even_mask.png")
+        self.masks.append(np.asarray(im))
+        im = Image.open("masks/black_odd_mask.png")
+        self.masks.append(np.asarray(im))
+        im = Image.open("masks/red_even_mask.png")
+        self.masks.append(np.asarray(im))
+        im = Image.open("masks/red_odd_mask.png")
+        self.masks.append(np.asarray(im))
+        im = Image.open("masks/grey_even_mask.png")
+        self.masks.append(np.asarray(im))
+        im = Image.open("masks/grey_odd_mask.png")
+        self.masks.append(np.asarray(im))
 
     def preview(self,levels):
+        layers = []
         r = self.numpy_im * 0
         g = self.numpy_im * 0
         b = self.numpy_im * 0
         i = 0
         for l in levels[0]:
-            cr = (self.numpy_im > l) * self.color_deltas[i][0]
-            cg = (self.numpy_im > l) * self.color_deltas[i][1]
-            cb = (self.numpy_im > l) * self.color_deltas[i][2]
-
-            r = r + cr
-            g = g + cg
-            b = b + cb
-
+            cr = (self.numpy_im > l) * 255
+            cg = (self.numpy_im > l) * 255
+            cb = (self.numpy_im > l) * 255
             a = np.dstack((cr,cg,cb))
+            a = a + self.masks[i]
+            a = np.clip(a,0,255)
             a = np.uint8(a)
-            t = Image.fromarray(a)
-            t.save("layer"+str(i)+".png")
-
+            layers.append(a)
             i += 1
 
-        a = np.dstack((r,g,b))
-        a = np.uint8(a)
-        t = Image.fromarray(a)
+        layers.reverse()
+        bg = layers[0]
+        for layer in layers[1:]:
+            bg = np.where(layer != 255,layer,bg)
+
+        t = Image.fromarray(bg)
         t.save("preview.png")
-
-
-
-
-
 
 
 if __name__ == "__main__":
     OutputFolder()
-    #Cropper("jimi-hendrix.jpg","image_crop")
-    #ColorOptions(OUPUT_DIR+"image_crop1.jpg")
+    Cropper("jimi-hendrix.jpg","image_crop")
+    ColorOptions(OUPUT_DIR+"image_crop1.jpg")
     Preview(OUPUT_DIR+"image_crop1.jpg")
 
 
