@@ -142,7 +142,7 @@ class Preview:
         self.numpy_im = np.asarray(im)
         self.color_deltas = np.diff(self.colors,axis=0)
         self.loadMasks()
-        self.preview(self.levels[1])
+        self.preview(self.levels[3])
 
     def loadMasks(self):
         self.masks = []
@@ -176,22 +176,30 @@ class Preview:
         bg = layers[0]
         counter = 1
         for layer in layers[1:]:
-            print counter
             bg = np.where(layer != 255,layer,bg)
             if counter < 2:
                 bg[bg==0] = 200
             elif counter < 4:
-                bg[bg==0] = 75
+                bg[bg==0] = 23
             counter += 1
 
-        t = Image.fromarray(bg)
+        r = np.copy(bg)
+        g = bg
+        b = bg
+
+        r[r==23] = 219
+
+        a = np.dstack((r,g,b))
+        a = np.uint8(a)
+        t = Image.fromarray(a)
+        t = t.resize((500,500),Image.ANTIALIAS)
         t.save("preview.png")
 
 
 if __name__ == "__main__":
     OutputFolder()
-    Cropper("jimi-hendrix.jpg","image_crop")
-    ColorOptions(OUPUT_DIR+"image_crop1.jpg")
+    #Cropper("jimi-hendrix.jpg","image_crop")
+    #ColorOptions(OUPUT_DIR+"image_crop1.jpg")
     Preview(OUPUT_DIR+"image_crop1.jpg")
 
 
