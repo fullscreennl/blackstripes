@@ -146,40 +146,43 @@ class Preview:
 
     def loadMasks(self):
         self.masks = []
-        im = Image.open("masks/black_even_mask.png")
+        im = Image.open("masks/black_even_mask.png").convert("L")
         self.masks.append(np.asarray(im))
-        im = Image.open("masks/black_odd_mask.png")
+        im = Image.open("masks/black_odd_mask.png").convert("L")
         self.masks.append(np.asarray(im))
-        im = Image.open("masks/red_even_mask.png")
+        im = Image.open("masks/red_even_mask.png").convert("L")
         self.masks.append(np.asarray(im))
-        im = Image.open("masks/red_odd_mask.png")
+        im = Image.open("masks/red_odd_mask.png").convert("L")
         self.masks.append(np.asarray(im))
-        im = Image.open("masks/grey_even_mask.png")
+        im = Image.open("masks/grey_even_mask.png").convert("L")
         self.masks.append(np.asarray(im))
-        im = Image.open("masks/grey_odd_mask.png")
+        im = Image.open("masks/grey_odd_mask.png").convert("L")
         self.masks.append(np.asarray(im))
 
     def preview(self,levels):
         layers = []
-        r = self.numpy_im * 0
-        g = self.numpy_im * 0
-        b = self.numpy_im * 0
         i = 0
         for l in levels[0]:
             cr = (self.numpy_im > l) * 255
-            cg = (self.numpy_im > l) * 255
-            cb = (self.numpy_im > l) * 255
-            a = np.dstack((cr,cg,cb))
-            a = a + self.masks[i]
+            a = cr + self.masks[i]
             a = np.clip(a,0,255)
             a = np.uint8(a)
             layers.append(a)
+            # t = Image.fromarray(a)
+            # t.save(str(i)+"_preview.png")
             i += 1
 
         layers.reverse()
         bg = layers[0]
+        counter = 1
         for layer in layers[1:]:
+            print counter
             bg = np.where(layer != 255,layer,bg)
+            if counter < 2:
+                bg[bg==0] = 200
+            elif counter < 4:
+                bg[bg==0] = 75
+            counter += 1
 
         t = Image.fromarray(bg)
         t.save("preview.png")
