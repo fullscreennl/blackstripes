@@ -1,6 +1,7 @@
 import numpy as np
 import Image
 import os
+import settings
 
 OUPUT_DIR = "www/images/"
 
@@ -80,27 +81,15 @@ class Cropper:
 
 class ColorOptions:
 
-    colors = np.array([[0,0,0],[80,30,30],[255,0,0],[255,100,100],[170,170,170],[220,220,220],[255,255,255]])
-
-    levels = [([0, 0, 46, 82, 136, 172],"_0"),
-                ([10, 28, 55, 73, 100, 118],"_1"),
-                ([37, 46, 60, 69, 82, 91],"_2"),
-                ([20, 56, 110, 146, 200, 236],"_3"),
-                ([74, 92, 119, 137, 164, 182],"_4"),
-                ([101, 110, 124, 133, 146, 155],"_5"),
-                ([84, 120, 174, 210, 255, 255],"_6"),
-                ([138, 156, 183, 201, 228, 246],"_7"),
-                ([165, 174, 188, 197, 210, 219],"_8")]
-
     def __init__(self,image_name):
         self.image_name = image_name
         im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L")
         self.numpy_im = np.asarray(im)
-        self.color_deltas = np.diff(self.colors,axis=0)
+        self.color_deltas = np.diff(settings.colors,axis=0)
         self.genPresets()
 
     def genPresets(self):
-        for l in self.levels:
+        for l in settings.levels:
             self.preview(l)
 
     def preview(self,levels):
@@ -126,50 +115,22 @@ class ColorOptions:
 
 class Preview:
 
-    colors = np.array([[0,0,0],[80,30,30],[255,0,0],[255,100,100],[170,170,170],[220,220,220],[255,255,255]])
-
-    levels = [([0, 0, 46, 82, 136, 172],"_0"),
-                ([10, 28, 55, 73, 100, 118],"_1"),
-                ([37, 46, 60, 69, 82, 91],"_2"),
-                ([20, 56, 110, 146, 200, 236],"_3"),
-                ([74, 92, 119, 137, 164, 182],"_4"),
-                ([101, 110, 124, 133, 146, 155],"_5"),
-                ([84, 120, 174, 210, 255, 255],"_6"),
-                ([138, 156, 183, 201, 228, 246],"_7"),
-                ([165, 174, 188, 197, 210, 219],"_8")]
-
     def __init__(self,image_name):
         self.preview_name = image_name
         color_id = image_name.split("_")[1]
         image_name = image_name.split("_")[0]
         im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L").resize((1000,1000),Image.BICUBIC)
         self.numpy_im = np.asarray(im)
-        self.color_deltas = np.diff(self.colors,axis=0)
-        self.loadMasks()
+        self.color_deltas = np.diff(settings.colors,axis=0)
         cid = int(color_id)
-        self.preview(self.levels[cid])
-
-    def loadMasks(self):
-        self.masks = []
-        im = Image.open("masks/black_even_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/black_odd_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/red_even_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/red_odd_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/grey_even_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/grey_odd_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
+        self.preview(settings.levels[cid])
 
     def preview(self,levels):
         layers = []
         i = 0
         for l in levels[0]:
             cr = (self.numpy_im > l) * 255
-            a = cr + self.masks[i]
+            a = cr + settings.masks[i]
             a = np.clip(a,0,255)
             a = np.uint8(a)
             layers.append(a)
