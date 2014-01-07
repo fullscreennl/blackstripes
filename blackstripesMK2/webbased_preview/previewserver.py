@@ -26,11 +26,13 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
-import Image
-import StringIO
-import time
 
 from tornado.options import define, options
+
+import Image
+import webbased_preview
+
+import hashlib
 
 define("port", default=8888, help="run on the given port", type=int)
 
@@ -40,20 +42,37 @@ class MainHandler(tornado.web.RequestHandler):
         self.write("Blackstripes preview server.")
 
 class UploadHandler(tornado.web.RequestHandler):
-    # get post data
+
     def post(self):
         imagename = self.get_argument('image.name', default=None)
         path = self.get_argument('image.path', default=None)
-        self.write(imagename)
-        img = Image.open(path)
-        img.save("plaatje.jpg")
 
+        m = hashlib.md5()
+        m.update(path+"fullscreen zacht spul is beter")
+        md5str = m.hexdigest()
+
+        webbased_preview.Cropper(path,md5str)
+        self.write(imagename)
+
+class ColorHandler(tornado.web.RequestHandler):
+
+    def get(self,image_id):
+        webbased_preview.ColorOptions(image_id)
+        self.write("OK")
+
+class PreviewHandler(tornado.web.RequestHandler):
+
+    def get(self,image_id):
+        webbased_preview.Preview(image_id)
+        self.write("OK")
 
 def main():
     tornado.options.parse_command_line()
     application = tornado.web.Application([
         (r"/", MainHandler),
         (r"/images/upload", UploadHandler),
+        (r"/color/?(?P<image_id>[^\/]+)?", ColorHandler),
+        (r"/preview/?(?P<image_id>[^\/]+)?", PreviewHandler),
     ])
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(options.port)

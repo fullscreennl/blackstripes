@@ -2,7 +2,7 @@ import numpy as np
 import Image
 import os
 
-OUPUT_DIR = "output/"
+OUPUT_DIR = "www/images/"
 
 class OutputFolder:
     def __init__(self):
@@ -82,18 +82,19 @@ class ColorOptions:
 
     colors = np.array([[0,0,0],[80,30,30],[255,0,0],[255,100,100],[170,170,170],[220,220,220],[255,255,255]])
 
-    levels = [([0, 0, 46, 82, 136, 172],"1"),
-                ([10, 28, 55, 73, 100, 118],"2"),
-                ([37, 46, 60, 69, 82, 91],"3"),
-                ([20, 56, 110, 146, 200, 236],"4"),
-                ([74, 92, 119, 137, 164, 182],"5"),
-                ([101, 110, 124, 133, 146, 155],"6"),
-                ([84, 120, 174, 210, 255, 255],"7"),
-                ([138, 156, 183, 201, 228, 246],"8"),
-                ([165, 174, 188, 197, 210, 219],"9")]
+    levels = [([0, 0, 46, 82, 136, 172],"_0"),
+                ([10, 28, 55, 73, 100, 118],"_1"),
+                ([37, 46, 60, 69, 82, 91],"_2"),
+                ([20, 56, 110, 146, 200, 236],"_3"),
+                ([74, 92, 119, 137, 164, 182],"_4"),
+                ([101, 110, 124, 133, 146, 155],"_5"),
+                ([84, 120, 174, 210, 255, 255],"_6"),
+                ([138, 156, 183, 201, 228, 246],"_7"),
+                ([165, 174, 188, 197, 210, 219],"_8")]
 
     def __init__(self,image_name):
-        im = Image.open(image_name).convert("L")
+        self.image_name = image_name
+        im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L")
         self.numpy_im = np.asarray(im)
         self.color_deltas = np.diff(self.colors,axis=0)
         self.genPresets()
@@ -119,7 +120,7 @@ class ColorOptions:
         a = np.dstack((r,g,b))
         a = np.uint8(a)
         t = Image.fromarray(a)
-        t.save(OUPUT_DIR+levels[1]+".png")
+        t.save(OUPUT_DIR+self.image_name+levels[1]+".png")
 
 
 
@@ -127,22 +128,26 @@ class Preview:
 
     colors = np.array([[0,0,0],[80,30,30],[255,0,0],[255,100,100],[170,170,170],[220,220,220],[255,255,255]])
 
-    levels = [([0, 0, 46, 82, 136, 172],"1"),
-                ([10, 28, 55, 73, 100, 118],"2"),
-                ([37, 46, 60, 69, 82, 91],"3"),
-                ([20, 56, 110, 146, 200, 236],"4"),
-                ([74, 92, 119, 137, 164, 182],"5"),
-                ([101, 110, 124, 133, 146, 155],"6"),
-                ([84, 120, 174, 210, 255, 255],"7"),
-                ([138, 156, 183, 201, 228, 246],"8"),
-                ([165, 174, 188, 197, 210, 219],"9")]
+    levels = [([0, 0, 46, 82, 136, 172],"_0"),
+                ([10, 28, 55, 73, 100, 118],"_1"),
+                ([37, 46, 60, 69, 82, 91],"_2"),
+                ([20, 56, 110, 146, 200, 236],"_3"),
+                ([74, 92, 119, 137, 164, 182],"_4"),
+                ([101, 110, 124, 133, 146, 155],"_5"),
+                ([84, 120, 174, 210, 255, 255],"_6"),
+                ([138, 156, 183, 201, 228, 246],"_7"),
+                ([165, 174, 188, 197, 210, 219],"_8")]
 
     def __init__(self,image_name):
-        im = Image.open(image_name).convert("L").resize((1000,1000),Image.BICUBIC)
+        self.preview_name = image_name
+        color_id = image_name.split("_")[1]
+        image_name = image_name.split("_")[0]
+        im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L").resize((1000,1000),Image.BICUBIC)
         self.numpy_im = np.asarray(im)
         self.color_deltas = np.diff(self.colors,axis=0)
         self.loadMasks()
-        self.preview(self.levels[3])
+        cid = int(color_id)
+        self.preview(self.levels[cid])
 
     def loadMasks(self):
         self.masks = []
@@ -193,14 +198,14 @@ class Preview:
         a = np.uint8(a)
         t = Image.fromarray(a)
         t = t.resize((500,500),Image.ANTIALIAS)
-        t.save("preview.png")
+        t.save(OUPUT_DIR+self.preview_name+"_preview.png")
 
 
 if __name__ == "__main__":
-    OutputFolder()
-    #Cropper("jimi-hendrix.jpg","image_crop")
-    #ColorOptions(OUPUT_DIR+"image_crop1.jpg")
-    Preview(OUPUT_DIR+"image_crop1.jpg")
+    #OutputFolder()
+    Cropper("jimi-hendrix.jpg","image_crop")
+    ColorOptions("image_crop1")
+    Preview("image_crop1.jpg")
 
 
 
