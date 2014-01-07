@@ -26,7 +26,7 @@ mask_images = ( "masks/black_even_mask.png","masks/black_odd_mask.png",
 
 masks = []
 for m in mask_images:
-    im = Image.open("masks/black_even_mask.png").convert("L")
+    im = Image.open(m).convert("L")
     masks.append(np.asarray(im))
 
 
