@@ -42,7 +42,6 @@ class MainHandler(tornado.web.RequestHandler):
 class UploadHandler(tornado.web.RequestHandler):
     # get post data
     def post(self):
-        time.sleep(30)
         imagename = self.get_argument('image.name', default=None)
         path = self.get_argument('image.path', default=None)
         self.write(imagename)
