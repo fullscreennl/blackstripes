@@ -97,7 +97,7 @@ class Cropper:
 class ColorOptions:
 
     def __init__(self,image_name):
-        self.html = ""
+        self.html = "<head><meta name='viewport' content='width=device-width, initial-scale=1.0' /></head>"
         self.image_name = image_name
         im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L")
         self.numpy_im = np.asarray(im)
@@ -126,7 +126,7 @@ class ColorOptions:
         a = np.uint8(a)
         t = Image.fromarray(a)
         iid = self.image_name+levels[1]
-        self.html += "<a href='/preview/%(image_id)s'><img src='/images/%(image_id)s.png' alt='crop' width='500' height='500'></img></a>\n"%{"image_id":iid}
+        self.html += "<a href='/preview/%(image_id)s'><img src='/images/%(image_id)s.png' alt='crop' width='320' height='320'></img></a>\n"%{"image_id":iid}
         t.save(OUPUT_DIR+self.image_name+levels[1]+".png")
 
     def getHtml(self):
@@ -137,7 +137,7 @@ class ColorOptions:
 class Preview:
 
     def __init__(self,image_name):
-        self.html = ""
+        self.html = "<head><meta name='viewport' content='width=device-width, initial-scale=1.0' /></head>"
         self.preview_name = image_name
         color_id = image_name.split("_")[1]
         image_name = image_name.split("_")[0]
@@ -181,7 +181,7 @@ class Preview:
         a = np.uint8(a)
         t = Image.fromarray(a)
         t = t.resize((500,500),Image.ANTIALIAS)
-        self.html += "<img src='/images/%(image_id)s' alt='crop' width='500' height='500'></img>\n"%{"image_id":self.preview_name+"_preview.png"}
+        self.html += "<img src='/images/%(image_id)s' alt='crop' width='320' height='320'></img>\n"%{"image_id":self.preview_name+"_preview.png"}
         t.save(OUPUT_DIR+self.preview_name+"_preview.png")
 
     def getHtml(self):
