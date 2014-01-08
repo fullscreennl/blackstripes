@@ -21,8 +21,17 @@ class Cropper:
     def __init__(self,image_name,imid):
 
         self.imid = imid
+        self.html = "<head><meta name='viewport' content='width=device-width, initial-scale=1.0' /></head>"
 
         im = Image.open(image_name)
+
+        try:
+            rot = im._getexif()[274]
+            if rot == 6:
+                im = im.rotate(-90)
+        except:
+            print "no rotation exif"
+
         w,h = im.size
 
         crops = None
@@ -70,18 +79,25 @@ class Cropper:
                 (offset_3+zoom_2,zoom_2,h+offset_3-zoom_2,h-zoom_2)
             ]
 
+        
         cr_count = 0
         for cr in crops:
             crim = im.crop(cr)
             _s = int(self.W),int(self.H)
             crim = crim.resize(_s,Image.BICUBIC)
             crim.save(OUPUT_DIR+self.imid+str(cr_count)+".jpg")
+            iid = self.imid+str(cr_count)
+            self.html += "<a href='/color/%(image_id)s'><img src='/images/%(image_id)s.jpg' alt='crop' width='320' height='320'></img></a>\n"%{"image_id":iid}
             cr_count += 1
+
+    def getHtml(self):
+        return self.html
 
 
 class ColorOptions:
 
     def __init__(self,image_name):
+        self.html = ""
         self.image_name = image_name
         im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L")
         self.numpy_im = np.asarray(im)
@@ -109,13 +125,19 @@ class ColorOptions:
         a = np.dstack((r,g,b))
         a = np.uint8(a)
         t = Image.fromarray(a)
+        iid = self.image_name+levels[1]
+        self.html += "<a href='/preview/%(image_id)s'><img src='/images/%(image_id)s.png' alt='crop' width='500' height='500'></img></a>\n"%{"image_id":iid}
         t.save(OUPUT_DIR+self.image_name+levels[1]+".png")
+
+    def getHtml(self):
+        return self.html
 
 
 
 class Preview:
 
     def __init__(self,image_name):
+        self.html = ""
         self.preview_name = image_name
         color_id = image_name.split("_")[1]
         image_name = image_name.split("_")[0]
@@ -159,7 +181,11 @@ class Preview:
         a = np.uint8(a)
         t = Image.fromarray(a)
         t = t.resize((500,500),Image.ANTIALIAS)
+        self.html += "<img src='/images/%(image_id)s' alt='crop' width='500' height='500'></img>\n"%{"image_id":self.preview_name+"_preview.png"}
         t.save(OUPUT_DIR+self.preview_name+"_preview.png")
+
+    def getHtml(self):
+        return self.html
 
 
 if __name__ == "__main__":
