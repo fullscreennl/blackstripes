@@ -51,20 +51,20 @@ class UploadHandler(tornado.web.RequestHandler):
         m.update(path+"fullscreen zacht spul is beter")
         md5str = m.hexdigest()
 
-        webbased_preview.Cropper(path,md5str)
-        self.write(imagename)
+        pr = webbased_preview.Cropper(path,md5str)
+        self.write(pr.getHtml())
 
 class ColorHandler(tornado.web.RequestHandler):
 
     def get(self,image_id):
-        webbased_preview.ColorOptions(image_id)
-        self.write("OK")
+        pr = webbased_preview.ColorOptions(image_id)
+        self.write(pr.getHtml())
 
 class PreviewHandler(tornado.web.RequestHandler):
 
     def get(self,image_id):
-        webbased_preview.Preview(image_id)
-        self.write("OK")
+        pr = webbased_preview.Preview(image_id)
+        self.write(pr.getHtml())
 
 def main():
     tornado.options.parse_command_line()
