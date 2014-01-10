@@ -52,19 +52,19 @@ class UploadHandler(tornado.web.RequestHandler):
         md5str = m.hexdigest()
 
         pr = webbased_preview.Cropper(path,md5str)
-        self.write(pr.getHtml())
+        self.write(pr.getJSON())
 
 class ColorHandler(tornado.web.RequestHandler):
 
     def get(self,image_id):
         pr = webbased_preview.ColorOptions(image_id)
-        self.write(pr.getHtml())
+        self.write(pr.getJSON())
 
 class PreviewHandler(tornado.web.RequestHandler):
 
     def get(self,image_id):
         pr = webbased_preview.Preview(image_id)
-        self.write(pr.getHtml())
+        self.write(pr.getJSON())
 
 def main():
     tornado.options.parse_command_line()

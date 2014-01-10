@@ -2,6 +2,7 @@ import numpy as np
 import Image
 import os
 import settings
+import json
 
 OUPUT_DIR = "www/images/"
 
@@ -13,6 +14,29 @@ class OutputFolder:
             print "folder OK"
 
 
+class Response:
+
+    def __init__(self):
+        self.data = {}
+        self.data['endpoint'] = "http://127.0.0.1:8000"
+        self.data['imagepath'] = "/images/"
+        self.data['next'] = ""
+        self.data['options'] = []
+        self.data['imtype'] = ".png"
+
+    def setImageType(self,imtype):
+        self.data['imtype'] = imtype
+
+    def setNextStep(self,next_url):
+        self.data['next'] = next_url
+
+    def addOption(self,iid):
+        self.data['options'].append(iid) 
+
+    def produce(self):
+        return json.dumps(self.data)
+
+
 class Cropper:
 
     W = 500
@@ -21,7 +45,9 @@ class Cropper:
     def __init__(self,image_name,imid):
 
         self.imid = imid
-        self.html = "<head><meta name='viewport' content='width=device-width, initial-scale=1.0' /></head>"
+        self.response = Response()
+        self.response.setNextStep("/color/")
+        self.response.setImageType(".jpg")
 
         im = Image.open(image_name)
 
@@ -87,17 +113,18 @@ class Cropper:
             crim = crim.resize(_s,Image.BICUBIC)
             crim.save(OUPUT_DIR+self.imid+str(cr_count)+".jpg")
             iid = self.imid+str(cr_count)
-            self.html += "<a href='/color/%(image_id)s'><img src='/images/%(image_id)s.jpg' alt='crop' width='320' height='320'></img></a>\n"%{"image_id":iid}
+            self.response.addOption(iid)
             cr_count += 1
 
-    def getHtml(self):
-        return self.html
+    def getJSON(self):
+        return self.response.produce()
 
 
 class ColorOptions:
 
     def __init__(self,image_name):
-        self.html = "<head><meta name='viewport' content='width=device-width, initial-scale=1.0' /></head>"
+        self.response = Response()
+        self.response.setNextStep("/preview/")
         self.image_name = image_name
         im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L")
         self.numpy_im = np.asarray(im)
@@ -126,18 +153,19 @@ class ColorOptions:
         a = np.uint8(a)
         t = Image.fromarray(a)
         iid = self.image_name+levels[1]
-        self.html += "<a href='/preview/%(image_id)s'><img src='/images/%(image_id)s.png' alt='crop' width='320' height='320'></img></a>\n"%{"image_id":iid}
+        self.response.addOption(iid)
         t.save(OUPUT_DIR+self.image_name+levels[1]+".png")
 
-    def getHtml(self):
-        return self.html
+    def getJSON(self):
+        return self.response.produce()
 
 
 
 class Preview:
 
     def __init__(self,image_name):
-        self.html = "<head><meta name='viewport' content='width=device-width, initial-scale=1.0' /></head>"
+        self.response = Response()
+        self.response.setNextStep("http://www.blackstripes.nl/put-the-item-in-the-basket/")
         self.preview_name = image_name
         color_id = image_name.split("_")[1]
         image_name = image_name.split("_")[0]
@@ -156,8 +184,6 @@ class Preview:
             a = np.clip(a,0,255)
             a = np.uint8(a)
             layers.append(a)
-            # t = Image.fromarray(a)
-            # t.save(str(i)+"_preview.png")
             i += 1
 
         layers.reverse()
@@ -181,18 +207,22 @@ class Preview:
         a = np.uint8(a)
         t = Image.fromarray(a)
         t = t.resize((500,500),Image.ANTIALIAS)
-        self.html += "<img src='/images/%(image_id)s' alt='crop' width='320' height='320'></img>\n"%{"image_id":self.preview_name+"_preview.png"}
+        self.response.addOption(self.preview_name+"_preview")
         t.save(OUPUT_DIR+self.preview_name+"_preview.png")
 
-    def getHtml(self):
-        return self.html
+    def getJSON(self):
+        return self.response.produce()
 
 
 if __name__ == "__main__":
     #OutputFolder()
-    Cropper("jimi-hendrix.jpg","image_crop")
-    ColorOptions("image_crop1")
-    Preview("image_crop1.jpg")
+
+    # test the simple api
+    print Cropper("jimi-hendrix.jpg","imagecrop").getJSON()
+    print ColorOptions("imagecrop1").getJSON()
+    print Preview("imagecrop1_4").getJSON()
+
+
 
 
 
