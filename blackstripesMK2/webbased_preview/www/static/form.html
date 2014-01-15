@@ -62,7 +62,7 @@ function displayImages(data){
     for(var i=0; i<l; i++){
         var imageurl = endpoint+imagepath+options[i]+imtype;
         var nexturl = endpoint+next+options[i];
-        htmlstr += "<a href='javascript:loadColoredImages(\""+nexturl+"\")'><img src='"+imageurl+"' /></a>";
+        htmlstr += "<a href='javascript:loadColoredImages(\""+nexturl+"\")'><img class='preview-image' src='"+imageurl+"' /></a>";
     }
 
     console.log(htmlstr);
