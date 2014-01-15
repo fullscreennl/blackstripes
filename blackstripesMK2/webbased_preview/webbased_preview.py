@@ -165,7 +165,7 @@ class Preview:
 
     def __init__(self,image_name):
         self.response = Response()
-        self.response.setNextStep("http://www.blackstripes.nl/put-the-item-in-the-basket/")
+        self.response.setNextStep("")
         self.preview_name = image_name
         color_id = image_name.split("_")[1]
         image_name = image_name.split("_")[0]
