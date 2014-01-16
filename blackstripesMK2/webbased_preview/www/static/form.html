@@ -62,13 +62,14 @@ function displayImages(data){
     var imagepath = data["imagepath"];
     var imtype = data["imtype"];
     var next = data["next"];
+    var version = data["version"];
 
     var htmlstr = "";
 
     var l = options.length;
     for(var i=0; i<l; i++){
         var imageurl = endpoint+imagepath+options[i]+imtype;
-        var nexturl = endpoint+next+options[i];
+        var nexturl = endpoint+version+next+options[i];
         htmlstr += "<a href='javascript:loadColoredImages(\""+nexturl+"\")'><img class='preview-image' src='"+imageurl+"' /></a>";
     }
 
@@ -80,7 +81,7 @@ function displayImages(data){
 $(function () {
     'use strict';
     // Change this to the location of your server-side upload handler:
-    var url = "/images/upload";
+    var url = "/v1/images/upload";
     $('#fileupload').fileupload({
         url: url,
         dataType: 'json',

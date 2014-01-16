@@ -18,11 +18,15 @@ class Response:
 
     def __init__(self):
         self.data = {}
-        self.data['endpoint'] = "http://192.168.0.101:8000"
-        self.data['imagepath'] = "/images/"
+        self.data['endpoint'] = "http://192.168.0.101:8000/"
+        self.data['imagepath'] = "images/"
+        self.data['version'] = "v2/"
         self.data['next'] = ""
         self.data['options'] = []
         self.data['imtype'] = ".png"
+
+    def setVersion(self,version):
+        self.data['version'] = version+"/"
 
     def setImageType(self,imtype):
         self.data['imtype'] = imtype
@@ -42,12 +46,13 @@ class Cropper:
     W = 500
     H = 500
 
-    def __init__(self,image_name,imid):
+    def __init__(self,image_name,imid,version):
 
         self.imid = imid
         self.response = Response()
-        self.response.setNextStep("/color/")
+        self.response.setNextStep("color/")
         self.response.setImageType(".jpg")
+        self.response.setVersion(version)
 
         im = Image.open(image_name)
 
@@ -122,17 +127,19 @@ class Cropper:
 
 class ColorOptions:
 
-    def __init__(self,image_name):
+    def __init__(self,image_name,version):
+        self.version = version
         self.response = Response()
-        self.response.setNextStep("/preview/")
+        self.response.setNextStep("preview/")
+        self.response.setVersion(version)
         self.image_name = image_name
         im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L")
         self.numpy_im = np.asarray(im)
-        self.color_deltas = np.diff(settings.colors,axis=0)
+        self.color_deltas = np.diff(settings.colors(version),axis=0)
         self.genPresets()
 
     def genPresets(self):
-        for l in settings.levels:
+        for l in settings.levels(self.version):
             self.preview(l)
 
     def preview(self,levels):
@@ -163,24 +170,26 @@ class ColorOptions:
 
 class Preview:
 
-    def __init__(self,image_name):
+    def __init__(self,image_name,version):
+        self.version = version
         self.response = Response()
         self.response.setNextStep("")
+        self.response.setVersion(version)
         self.preview_name = image_name
         color_id = image_name.split("_")[1]
         image_name = image_name.split("_")[0]
         im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L").resize((1000,1000),Image.BICUBIC)
         self.numpy_im = np.asarray(im)
-        self.color_deltas = np.diff(settings.colors,axis=0)
+        self.color_deltas = np.diff(settings.colors(version),axis=0)
         cid = int(color_id)
-        self.preview(settings.levels[cid])
+        self.preview(settings.levels(version)[cid])
 
     def preview(self,levels):
         layers = []
         i = 0
         for l in levels[0]:
             cr = (self.numpy_im > l) * 255
-            a = cr + settings.masks[i]
+            a = cr + settings.masks(self.version)[i]
             a = np.clip(a,0,255)
             a = np.uint8(a)
             layers.append(a)
@@ -191,10 +200,11 @@ class Preview:
         counter = 1
         for layer in layers[1:]:
             bg = np.where(layer != 255,layer,bg)
-            if counter < 2:
-                bg[bg==0] = 200
-            elif counter < 4:
-                bg[bg==0] = 23
+            if self.version == "v2":
+                if counter < 2:
+                    bg[bg==0] = 200
+                elif counter < 4:
+                    bg[bg==0] = 23
             counter += 1
 
         r = np.copy(bg)
@@ -218,9 +228,13 @@ if __name__ == "__main__":
     #OutputFolder()
 
     # test the simple api
-    print Cropper("jimi-hendrix.jpg","imagecrop").getJSON()
-    print ColorOptions("imagecrop1").getJSON()
-    print Preview("imagecrop1_4").getJSON()
+    print Cropper("jimi-hendrix.jpg","imagecrop","v1").getJSON()
+    print ColorOptions("imagecrop1","v1").getJSON()
+    print Preview("imagecrop1_0","v1").getJSON()
+
+    print Cropper("jimi-hendrix.jpg","imagecrop","v2").getJSON()
+    print ColorOptions("imagecrop1","v2").getJSON()
+    print Preview("imagecrop1_0","v2").getJSON()
 
 
 

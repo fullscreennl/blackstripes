@@ -45,6 +45,7 @@ class MainHandler(tornado.web.RequestHandler):
 class UploadHandler(tornado.web.RequestHandler):
 
     def post(self):
+        print ">>>>>>>>>> ",self.version
         imagename = self.get_argument('image.name', default=None)
         path = self.get_argument('image.path', default=None)
 
@@ -52,28 +53,35 @@ class UploadHandler(tornado.web.RequestHandler):
         m.update(path+"fullscreen zacht spul is beter")
         md5str = m.hexdigest()
 
-        pr = webbased_preview.Cropper(path,md5str)
+        pr = webbased_preview.Cropper(path,md5str,self.version)
         self.write(pr.getJSON())
+
+class UploadHandler_v1(UploadHandler):
+    version = "v1"
+
+class UploadHandler_v2(UploadHandler):
+    version = "v2"
 
 class ColorHandler(tornado.web.RequestHandler):
 
-    def get(self,image_id):
-        pr = webbased_preview.ColorOptions(image_id)
+    def get(self,version,image_id):
+        pr = webbased_preview.ColorOptions(image_id,version)
         self.write(pr.getJSON())
 
 class PreviewHandler(tornado.web.RequestHandler):
 
-    def get(self,image_id):
-        pr = webbased_preview.Preview(image_id)
+    def get(self,version,image_id):
+        pr = webbased_preview.Preview(image_id,version)
         self.write(pr.getJSON())
 
 def main():
     tornado.options.parse_command_line()
     application = tornado.web.Application([
         (r"/", MainHandler),
-        (r"/images/upload", UploadHandler),
-        (r"/color/?(?P<image_id>[^\/]+)?", ColorHandler),
-        (r"/preview/?(?P<image_id>[^\/]+)?", PreviewHandler),
+        (r"/v1/images/upload", UploadHandler_v1),
+        (r"/v2/images/upload", UploadHandler_v2),
+        (r"/?(?P<version>[^\/]+)?/color/?(?P<image_id>[^\/]+)?", ColorHandler),
+        (r"/?(?P<version>[^\/]+)?/preview/?(?P<image_id>[^\/]+)?", PreviewHandler),
     ])
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(options.port)
