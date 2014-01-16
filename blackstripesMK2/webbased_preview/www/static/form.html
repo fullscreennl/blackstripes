@@ -31,10 +31,17 @@
     
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script src="js/vendor/jquery.ui.widget.js"></script>
+<script src="js/load-image.min.js"></script>
+<script src="js/canvas-to-blob.min.js"></script>
 <script src="js/jquery.iframe-transport.js"></script>
 <script src="js/jquery.fileupload.js"></script>
+<script src="js/jquery.fileupload-process.js"></script>
+<script src="js/jquery.fileupload-image.js"></script>
+
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
 
 <script>
@@ -77,6 +84,13 @@ $(function () {
     $('#fileupload').fileupload({
         url: url,
         dataType: 'json',
+
+        disableImageResize: /Android(?!.*Chrome)|Opera/
+        .test(window.navigator && navigator.userAgent),
+        imageMaxWidth: 800,
+        imageMaxHeight: 800,
+        imageCrop: false,
+
         done: function (e, data) {
             $(".container").hide();
             displayImages(data.result);
@@ -88,6 +102,7 @@ $(function () {
                 progress + '%'
             );
         }
+
     }).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
 });
