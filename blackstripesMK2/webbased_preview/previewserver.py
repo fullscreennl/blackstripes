@@ -45,7 +45,6 @@ class MainHandler(tornado.web.RequestHandler):
 class UploadHandler(tornado.web.RequestHandler):
 
     def post(self):
-        print ">>>>>>>>>> ",self.version
         imagename = self.get_argument('image.name', default=None)
         path = self.get_argument('image.path', default=None)
 
