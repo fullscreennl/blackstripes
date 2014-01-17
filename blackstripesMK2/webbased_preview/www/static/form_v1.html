@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <title> - Blackstripes upload - </title>
+    <meta name="description" content="blackstripes uploader">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/jquery.fileupload.css">
+
+</head>
+<body>
+
+<div id="image-options"></div>
+
+<div class="container">
+    <span class="btn btn-success fileinput-button">
+        <i class="glyphicon glyphicon-plus"></i>
+        <span>Select files...</span>
+        <input id="fileupload" type="file" name="image">
+    </span>
+    <br>
+    <br>
+    <div id="progress" class="progress">
+        <div class="progress-bar progress-bar-success"></div>
+    </div>
+    <div id="files" class="files"></div>
+    
+</div>
+
+<script>
+    var VERSION = "v1";
+</script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script src="js/vendor/jquery.ui.widget.js"></script>
+<script src="js/load-image.min.js"></script>
+<script src="js/canvas-to-blob.min.js"></script>
+<script src="js/jquery.iframe-transport.js"></script>
+<script src="js/jquery.fileupload.js"></script>
+<script src="js/jquery.fileupload-process.js"></script>
+<script src="js/jquery.fileupload-image.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="js/blackstripes-upload.js"></script>
+
+</body> 
+</html>
