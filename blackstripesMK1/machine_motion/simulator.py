@@ -85,7 +85,7 @@ class SimuDriver(Driver):
         self.up_accumulator = 0.0
         realSim = RealSimulator(self.file_base_name+'_realoutput.png')
         l,r = g_NullPosition
-        self.currentPos = (int(round(l)),int(round(r)),0)
+        self.currentpos = (int(round(l)),int(round(r)),0)
         counter = 0
         linecounter = 0
         layercounter = 0
