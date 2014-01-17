@@ -1,3 +1,10 @@
+var wizardIdMap = {}
+wizardIdMap['crops'] = {'title':'Selecteer de beste uitsnede.','nav':""};
+wizardIdMap['colors'] = {'title':'Selecteer de mooiste afbeelding.','nav':""};
+wizardIdMap['preview'] = {'title':'Hopakee!',
+                            'nav':"<br/><a class='btn btn-default btn-lg' href=''>Andere foto proberen.</a> <a class='btn btn-success btn-lg' href=''>Hij is mooi, Bestellen!</a>"};
+
+
 function loadColoredImages(nexturl){
     $.getJSON( nexturl, function( data ) {
         displayImages(data);
@@ -14,8 +21,12 @@ function displayImages(data){
     var imtype = data["imtype"];
     var next = data["next"];
     var version = data["version"];
+    var id = data["id"];
 
-    var htmlstr = "";
+    var title = wizardIdMap[id]['title'];
+    var nav = wizardIdMap[id]['nav'];
+
+    var htmlstr = "<h1>"+title+"</h1>";
 
     var l = options.length;
     for(var i=0; i<l; i++){
@@ -23,6 +34,8 @@ function displayImages(data){
         var nexturl = endpoint+version+next+options[i];
         htmlstr += "<a href='javascript:loadColoredImages(\""+nexturl+"\")'><img class='preview-image' src='"+imageurl+"' /></a>";
     }
+
+    htmlstr += nav;
 
     console.log(htmlstr);
     $("#image-options").append(htmlstr);

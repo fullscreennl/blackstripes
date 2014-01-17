@@ -24,6 +24,10 @@ class Response:
         self.data['next'] = ""
         self.data['options'] = []
         self.data['imtype'] = ".png"
+        self.data['id'] = ""
+
+    def setID(self,anid):
+        self.data['id'] = anid
 
     def setVersion(self,version):
         self.data['version'] = version+"/"
@@ -53,6 +57,7 @@ class Cropper:
         self.response.setNextStep("color/")
         self.response.setImageType(".jpg")
         self.response.setVersion(version)
+        self.response.setID("crops")
 
         im = Image.open(image_name)
 
@@ -132,6 +137,7 @@ class ColorOptions:
         self.response = Response()
         self.response.setNextStep("preview/")
         self.response.setVersion(version)
+        self.response.setID("colors")
         self.image_name = image_name
         im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L")
         self.numpy_im = np.asarray(im)
@@ -175,6 +181,7 @@ class Preview:
         self.response = Response()
         self.response.setNextStep("")
         self.response.setVersion(version)
+        self.response.setID("preview")
         self.preview_name = image_name
         color_id = image_name.split("_")[1]
         image_name = image_name.split("_")[0]
