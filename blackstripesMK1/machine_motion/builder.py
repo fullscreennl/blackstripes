@@ -2,8 +2,9 @@ import math
 import json
 import os
 import time
-import Image
-import ImageDraw
+from PIL import Image as Image
+#import Image
+#import ImageDraw
 
 from machine_settings import *
 
@@ -75,6 +76,7 @@ class Builder:
 
     def __init__(self,input_image):
         #self.jabname = input_image
+        print 'input_image>>>>>>>>>>>>'+input_image
         self.input_image = Image.open(input_image)
         self.input_image = self.input_image.resize(CANVAS_SIZE,Image.BICUBIC)
         
