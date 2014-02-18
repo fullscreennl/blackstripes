@@ -2,11 +2,10 @@ import math
 import json
 import os
 import time
-from PIL import Image as Image
-#import Image
-#import ImageDraw
+from PIL import Image
+from PIL import ImageDraw
 
-from machine_settings import *
+from machine_settings_small import *
 
 
 
