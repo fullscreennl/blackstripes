@@ -5,7 +5,7 @@ import ImageDraw
 
 from driver import Driver
 from builder import *
-from machine_settings import *
+from machine_settings_small import *
 
 #this Realsimulator acts like the real printer
 class RealSimulator:
@@ -85,7 +85,7 @@ class SimuDriver(Driver):
         self.up_accumulator = 0.0
         realSim = RealSimulator(self.file_base_name+'_realoutput.png')
         l,r = g_NullPosition
-        self.currentPos = (int(round(l)),int(round(r)),0)
+        self.currentpos = (int(round(l)),int(round(r)),0)
         counter = 0
         linecounter = 0
         layercounter = 0
@@ -147,8 +147,8 @@ class Simulator:
 
 
 if __name__ == '__main__':
-    basepath = "generated_data/testies/"
-    order_id = "testies"
+    basepath = "generated_data/order67/"
+    order_id = "order67"
 
     drivr = SimuDriver(basepath+order_id)
     drivr.simulate()
