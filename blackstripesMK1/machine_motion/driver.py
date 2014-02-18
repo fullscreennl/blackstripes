@@ -3,7 +3,7 @@ import math
 import os
 
 from printer import Printer
-from machine_settings import *
+from machine_settings_small import *
 
 class Driver:
 
