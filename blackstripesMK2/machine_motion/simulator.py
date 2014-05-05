@@ -3,7 +3,8 @@ import struct
 import coder
 from machine_settings import *
 from model import Blackstripes_MKII
-import Image,ImageDraw
+from PIL import Image as Image
+from PIL import ImageDraw as ImageDraw
 import sys
 
 PIX_PER_MM = 3

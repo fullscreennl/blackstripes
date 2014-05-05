@@ -1,4 +1,4 @@
-import Image
+from PIL import Image as Image
 import numpy
 import struct
 import os
