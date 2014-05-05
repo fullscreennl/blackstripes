@@ -2,13 +2,9 @@ import math
 import json
 import os
 import time
-from PIL import Image as Image
-#import Image
-#import ImageDraw
+from PIL import Image
 
-from machine_settings import *
-
-
+from machine_settings_small import *
 
 ##### top level functions #####
 
@@ -75,8 +71,6 @@ def posFromLengths(l1,l2):
 class Builder:
 
     def __init__(self,input_image):
-        #self.jabname = input_image
-        print 'input_image>>>>>>>>>>>>'+input_image
         self.input_image = Image.open(input_image)
         self.input_image = self.input_image.resize(CANVAS_SIZE,Image.BICUBIC)
         

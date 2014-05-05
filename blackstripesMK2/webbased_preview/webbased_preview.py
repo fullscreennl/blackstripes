@@ -1,8 +1,10 @@
 import numpy as np
 import Image
 import os
+import settings
+import json
 
-OUPUT_DIR = "output/"
+OUPUT_DIR = "www/images/"
 
 class OutputFolder:
     def __init__(self):
@@ -12,16 +14,60 @@ class OutputFolder:
             print "folder OK"
 
 
+class Response:
+
+    def __init__(self):
+        self.data = {}
+        self.data['endpoint'] = "http://192.168.0.101:8000/"
+        self.data['imagepath'] = "images/"
+        self.data['version'] = "v2/"
+        self.data['next'] = ""
+        self.data['options'] = []
+        self.data['imtype'] = ".png"
+        self.data['id'] = ""
+
+    def setID(self,anid):
+        self.data['id'] = anid
+
+    def setVersion(self,version):
+        self.data['version'] = version+"/"
+
+    def setImageType(self,imtype):
+        self.data['imtype'] = imtype
+
+    def setNextStep(self,next_url):
+        self.data['next'] = next_url
+
+    def addOption(self,iid):
+        self.data['options'].append(iid) 
+
+    def produce(self):
+        return json.dumps(self.data)
+
+
 class Cropper:
 
     W = 500
     H = 500
 
-    def __init__(self,image_name,imid):
+    def __init__(self,image_name,imid,version):
 
         self.imid = imid
+        self.response = Response()
+        self.response.setNextStep("color/")
+        self.response.setImageType(".jpg")
+        self.response.setVersion(version)
+        self.response.setID("crops")
 
         im = Image.open(image_name)
+
+        try:
+            rot = im._getexif()[274]
+            if rot == 6:
+                im = im.rotate(-90)
+        except:
+            print "no rotation exif"
+
         w,h = im.size
 
         crops = None
@@ -69,37 +115,37 @@ class Cropper:
                 (offset_3+zoom_2,zoom_2,h+offset_3-zoom_2,h-zoom_2)
             ]
 
+        
         cr_count = 0
         for cr in crops:
             crim = im.crop(cr)
             _s = int(self.W),int(self.H)
             crim = crim.resize(_s,Image.BICUBIC)
             crim.save(OUPUT_DIR+self.imid+str(cr_count)+".jpg")
+            iid = self.imid+str(cr_count)
+            self.response.addOption(iid)
             cr_count += 1
+
+    def getJSON(self):
+        return self.response.produce()
 
 
 class ColorOptions:
 
-    colors = np.array([[0,0,0],[80,30,30],[255,0,0],[255,100,100],[170,170,170],[220,220,220],[255,255,255]])
-
-    levels = [([0, 0, 46, 82, 136, 172],"1"),
-                ([10, 28, 55, 73, 100, 118],"2"),
-                ([37, 46, 60, 69, 82, 91],"3"),
-                ([20, 56, 110, 146, 200, 236],"4"),
-                ([74, 92, 119, 137, 164, 182],"5"),
-                ([101, 110, 124, 133, 146, 155],"6"),
-                ([84, 120, 174, 210, 255, 255],"7"),
-                ([138, 156, 183, 201, 228, 246],"8"),
-                ([165, 174, 188, 197, 210, 219],"9")]
-
-    def __init__(self,image_name):
-        im = Image.open(image_name).convert("L")
+    def __init__(self,image_name,version):
+        self.version = version
+        self.response = Response()
+        self.response.setNextStep("preview/")
+        self.response.setVersion(version)
+        self.response.setID("colors")
+        self.image_name = image_name
+        im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L")
         self.numpy_im = np.asarray(im)
-        self.color_deltas = np.diff(self.colors,axis=0)
+        self.color_deltas = np.diff(settings.colors(version),axis=0)
         self.genPresets()
 
     def genPresets(self):
-        for l in self.levels:
+        for l in settings.levels(self.version):
             self.preview(l)
 
     def preview(self,levels):
@@ -119,57 +165,41 @@ class ColorOptions:
         a = np.dstack((r,g,b))
         a = np.uint8(a)
         t = Image.fromarray(a)
-        t.save(OUPUT_DIR+levels[1]+".png")
+        iid = self.image_name+levels[1]
+        self.response.addOption(iid)
+        t.save(OUPUT_DIR+self.image_name+levels[1]+".png")
+
+    def getJSON(self):
+        return self.response.produce()
 
 
 
 class Preview:
 
-    colors = np.array([[0,0,0],[80,30,30],[255,0,0],[255,100,100],[170,170,170],[220,220,220],[255,255,255]])
-
-    levels = [([0, 0, 46, 82, 136, 172],"1"),
-                ([10, 28, 55, 73, 100, 118],"2"),
-                ([37, 46, 60, 69, 82, 91],"3"),
-                ([20, 56, 110, 146, 200, 236],"4"),
-                ([74, 92, 119, 137, 164, 182],"5"),
-                ([101, 110, 124, 133, 146, 155],"6"),
-                ([84, 120, 174, 210, 255, 255],"7"),
-                ([138, 156, 183, 201, 228, 246],"8"),
-                ([165, 174, 188, 197, 210, 219],"9")]
-
-    def __init__(self,image_name):
-        im = Image.open(image_name).convert("L").resize((1000,1000),Image.BICUBIC)
+    def __init__(self,image_name,version):
+        self.version = version
+        self.response = Response()
+        self.response.setNextStep("")
+        self.response.setVersion(version)
+        self.response.setID("preview")
+        self.preview_name = image_name
+        color_id = image_name.split("_")[1]
+        image_name = image_name.split("_")[0]
+        im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L").resize((1000,1000),Image.BICUBIC)
         self.numpy_im = np.asarray(im)
-        self.color_deltas = np.diff(self.colors,axis=0)
-        self.loadMasks()
-        self.preview(self.levels[3])
-
-    def loadMasks(self):
-        self.masks = []
-        im = Image.open("masks/black_even_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/black_odd_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/red_even_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/red_odd_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/grey_even_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
-        im = Image.open("masks/grey_odd_mask.png").convert("L")
-        self.masks.append(np.asarray(im))
+        self.color_deltas = np.diff(settings.colors(version),axis=0)
+        cid = int(color_id)
+        self.preview(settings.levels(version)[cid])
 
     def preview(self,levels):
         layers = []
         i = 0
         for l in levels[0]:
             cr = (self.numpy_im > l) * 255
-            a = cr + self.masks[i]
+            a = cr + settings.masks(self.version)[i]
             a = np.clip(a,0,255)
             a = np.uint8(a)
             layers.append(a)
-            # t = Image.fromarray(a)
-            # t.save(str(i)+"_preview.png")
             i += 1
 
         layers.reverse()
@@ -177,10 +207,11 @@ class Preview:
         counter = 1
         for layer in layers[1:]:
             bg = np.where(layer != 255,layer,bg)
-            if counter < 2:
-                bg[bg==0] = 200
-            elif counter < 4:
-                bg[bg==0] = 23
+            if self.version == "v2":
+                if counter < 2:
+                    bg[bg==0] = 200
+                elif counter < 4:
+                    bg[bg==0] = 23
             counter += 1
 
         r = np.copy(bg)
@@ -193,14 +224,26 @@ class Preview:
         a = np.uint8(a)
         t = Image.fromarray(a)
         t = t.resize((500,500),Image.ANTIALIAS)
-        t.save("preview.png")
+        self.response.addOption(self.preview_name+"_preview")
+        t.save(OUPUT_DIR+self.preview_name+"_preview.png")
+
+    def getJSON(self):
+        return self.response.produce()
 
 
 if __name__ == "__main__":
-    OutputFolder()
-    #Cropper("jimi-hendrix.jpg","image_crop")
-    #ColorOptions(OUPUT_DIR+"image_crop1.jpg")
-    Preview(OUPUT_DIR+"image_crop1.jpg")
+    #OutputFolder()
+
+    # test the simple api
+    print Cropper("jimi-hendrix.jpg","imagecrop","v1").getJSON()
+    print ColorOptions("imagecrop1","v1").getJSON()
+    print Preview("imagecrop1_0","v1").getJSON()
+
+    print Cropper("jimi-hendrix.jpg","imagecrop","v2").getJSON()
+    print ColorOptions("imagecrop1","v2").getJSON()
+    print Preview("imagecrop1_0","v2").getJSON()
+
+
 
 
 

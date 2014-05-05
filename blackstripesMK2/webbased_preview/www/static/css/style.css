@@ -1,0 +1,12 @@
+@charset "UTF-8";
+
+.preview-image {
+	width:  80%;
+	height: auto;
+	max-width: 500px;
+	margin: 10px;
+}
+
+#image-options{
+	text-align: center;
+}
