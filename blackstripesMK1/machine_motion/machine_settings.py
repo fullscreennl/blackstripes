@@ -1,3 +1,6 @@
+import os
+print "## settings: "+os.path.basename(__file__)+" ##"
+
 DOTSIZE = 1.5
 TRANSITION_DOTSIZE = 5
 LEFT_STEPPER_POS = (0.0,0.0)

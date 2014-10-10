@@ -4,7 +4,7 @@ import os
 import time
 from PIL import Image
 
-from machine_settings_small import *
+from machine_settings_xlarge import *
 
 ##### top level functions #####
 

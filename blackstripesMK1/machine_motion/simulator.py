@@ -5,7 +5,7 @@ import ImageDraw
 
 from driver import Driver
 from builder import *
-from machine_settings_small import *
+from machine_settings_xlarge import *
 
 #this Realsimulator acts like the real printer
 class RealSimulator:
@@ -147,8 +147,8 @@ class Simulator:
 
 
 if __name__ == '__main__':
-    basepath = "generated_data/order67/"
-    order_id = "order67"
+    basepath = "generated_data/testies/"
+    order_id = "testies"
 
     drivr = SimuDriver(basepath+order_id)
     drivr.simulate()
