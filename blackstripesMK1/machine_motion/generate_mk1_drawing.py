@@ -2,6 +2,7 @@ import builder
 import driver
 import sys, os
 import zipfile
+import simulator
 
 class OrderProcessor:
 
@@ -80,4 +81,10 @@ if __name__ == '__main__':
     os.remove('layer2.dat')
     os.remove('layer3.dat')
     os.remove('layer4.dat')
+
+    drivr = simulator.SimuDriver(basepath+order_id)
+    drivr.simulate()
+    
+    #this is for the real simulated output with all printer paths visialized in light magenta, saved in realoutput.png
+    drivr.run() 
 
