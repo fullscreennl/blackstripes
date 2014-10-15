@@ -41,8 +41,8 @@ void draw_layer(void *arg)
     
     for(currentlayer; currentlayer < filenameCount; currentlayer++){
         
-        print("press any key to continue");
-        getchr();
+        printf("press any key to continue");
+        getchar();
         printf("drawing : %s \n",myFilenames[currentlayer]);
         
         bcm2835_gpio_write(SOLENOID, HIGH);
