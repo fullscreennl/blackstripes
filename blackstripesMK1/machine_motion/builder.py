@@ -78,7 +78,7 @@ class Builder:
         pos3 = posFromLengths(pos3[0],pos3[1])
         x,y = pos3
         x = int(math.floor(x))-g_Offset
-        y = int(math.floor(y))-g_Offset
+        y = int(math.floor(y))-g_yOffset
         try:
             level = self.input_image.getpixel((x,y))[0]
         except:
@@ -107,19 +107,19 @@ class Builder:
         print 'generating layer 1'
         layer1 = Layer()
         for offset in range(CURVED_ITERATIONS):
+            offset = offset - 50
             line = Line()
-            offset = offset*LINE_SPACING
-            bl1,bl2 = lengthFromPos(-PADDING + offset, g_Offset)
-            el1,el2 = lengthFromPos(g_MachineWidth-g_Offset, g_MachineWidth +PADDING- offset)
+            offset = offset * LINE_SPACING
+            bl1,bl2 = lengthFromPos(offset, g_yOffset)
+            el1,el2 = lengthFromPos(g_MachineWidth - g_Offset, (CANVAS_SIZE[1] + g_yOffset + g_Offset) - offset)
             dot_found = False
             for d in range(int(round(el1 - bl1))):
-                x,y = posFromLengths(bl1 + d, el2)
-                if x > g_Offset and y < g_MachineWidth - g_Offset:
-                    up = self.doDraw((bl1 + d, el2), mode="l", line=0,
-                                     level=levels[0], color=(0,0,0,255))
+                x,y = posFromLengths(bl1 + d, bl2)
+                if x > g_Offset and y < g_yOffset + CANVAS_SIZE[1]:
+                    up = self.doDraw((bl1 + d, bl2), mode="l", line=0, level=levels[0], color=(0,0,0,255))
                     if up > -1:
-                        line.addDot((bl1+d,el2,up))
-                    if up==1:
+                        line.addDot((bl1 + d,bl2,up))
+                    if up == 1:
                         dot_found = True
             if dot_found:
                 layer1.addLine(line)
@@ -132,16 +132,16 @@ class Builder:
         layer2 = Layer()
         
         for offset in range(CURVED_ITERATIONS):
+            offset = offset - 50
             line = Line()
             offset = offset*LINE_SPACING
-            bl1,bl2 = lengthFromPos(g_MachineWidth+PADDING - offset,g_Offset)
-            el1,el2 = lengthFromPos(g_Offset,g_MachineWidth+PADDING- offset)
+            bl1,bl2 = lengthFromPos(g_MachineWidth - offset,g_yOffset)
+            el1,el2 = lengthFromPos(g_Offset,(CANVAS_SIZE[1] + g_yOffset + g_Offset) - offset)
             dot_found = False
             for d in range(int(round(el2-bl2))):
                 x,y = posFromLengths(bl1,bl2+d)
-                if x > g_Offset and y < g_MachineWidth - g_Offset:
-                    up = self.doDraw((bl1,bl2+d), mode="l", line=0, 
-                                     level=levels[1], color=(0,0,0,255))
+                if x > g_Offset and y < g_yOffset + CANVAS_SIZE[1]:
+                    up = self.doDraw((bl1,bl2+d), mode="l", line=0, level=levels[1], color=(0,0,0,255))
                     if up > -1:
                         line.addDot((bl1,bl2+d,up))
                     if up==1:
@@ -164,15 +164,15 @@ class Builder:
             line = Line()
             offset = offset*LINE_SPACING - 100.0
             #startpoint
-            x,y = g_Offset,g_Offset + offset
+            x,y = g_Offset,g_yOffset + offset
             l,r = lengthFromPos(x,y)
             #endpoint
-            x2,y2 = g_MachineWidth-g_Offset,g_Offset+offset
+            x2,y2 = g_MachineWidth-g_Offset,g_yOffset+offset
             l2,r2 = lengthFromPos(x2,y2)
             dot_found = False
             for d in range(int(round(r - r2))):
                 x,y = posFromLengths(r-d, l+d)
-                if x > g_Offset and y < g_MachineWidth and y > g_Offset:
+                if x > g_Offset and y < g_MachineWidth and y > g_yOffset:
                     up = self.doDraw((r-d,l+d),mode="l",line=0, level=levels[2],color=(0,0,0,255))
                     if up == -1:
                         up = 0
@@ -194,26 +194,26 @@ class Builder:
             line = Line()
             offset = offset*LINE_SPACING
             #startpoint
-            x,y = g_Offset+offset,g_Offset
+            x,y = g_Offset+offset,g_yOffset
             l,r = lengthFromPos(x,y)
             #endpoint
-            x2,y2 = g_Offset+offset,g_MachineWidth - g_Offset
+            x2,y2 = g_Offset+offset,CANVAS_SIZE[1] + g_yOffset
             l2,r2 = lengthFromPos(x2,y2)
             dot_found = False
             #print 'calculated range: ',round(r2-r),round(l2-l)
             for d in range(max(int(round(r2-r)),int(round(l2-l)))):
                 x,y = posFromLengths(r+d, l+d)
-                if x > g_Offset and y < (g_MachineWidth - g_Offset) and x < (g_MachineWidth - g_Offset):
+                if x > g_Offset and y < (g_yOffset + CANVAS_SIZE[1]) and x < (g_MachineWidth - g_Offset):
                     up = self.doDraw((r+d, l+d),mode="l",line=0, level=levels[3],color=(0,0,0,255))
                     if up == -1:
                         up = 0
                     line.addDot((r+d, l+d,up))
-                    if up==1:
+                    if up == 1:
                         dot_found = True
             if dot_found:
                 layer4.addLine(line)
         
-        l,r = lengthFromPos(g_Offset + CANVAS_SIZE[0]-180,g_Offset+CANVAS_SIZE[1]+50)
+        l,r = lengthFromPos(g_Offset + CANVAS_SIZE[0]-180, g_yOffset + CANVAS_SIZE[1]+50)
         line = Line()
         line.addDot((l,r,up))
         layer4.addLine(line)
