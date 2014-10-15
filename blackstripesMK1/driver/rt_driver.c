@@ -25,7 +25,7 @@ void draw_layer(void *arg)
 {
  
     char **myFilenames;
-    int filenameCount = 5;
+    int filenameCount = 4;
     myFilenames = (char**)calloc(sizeof(char**),filenameCount);
     if (myFilenames == NULL) {
         printf("Error allocating filename array\n");
@@ -36,7 +36,6 @@ void draw_layer(void *arg)
     myFilenames[1] = "layer1.dat";
     myFilenames[2] = "layer2.dat";
     myFilenames[3] = "layer3.dat";
-    myFilenames[4] = "sig.dat";
     
     int currentlayer = 0;
     
