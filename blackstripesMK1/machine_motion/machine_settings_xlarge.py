@@ -17,7 +17,7 @@ STEPS_PER_MM = 42.5532
 Z_STEPS_PER_MM = 2 
 
 ###### globals #####
-g_Offset = (RIGHT_STEPPER_POS[0] - CANVAS_SIZE[0]) / 2
+g_Offset = (RIGHT_STEPPER_POS[0] - CANVAS_SIZE[0])
 g_MachineWidth = int(RIGHT_STEPPER_POS[0])
 #g_NullPosition = lengthFromPos(750,750)
 g_NullPosition = (1580,1580)

@@ -1,7 +1,7 @@
 import json
 import math
-import Image
-import ImageDraw
+from PIL import Image
+from PIL import ImageDraw
 
 from driver import Driver
 from builder import *
