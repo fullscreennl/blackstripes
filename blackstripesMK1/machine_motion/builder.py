@@ -183,42 +183,75 @@ class Builder:
                 layer3.addLine(line)
         layer3.addLine("layer3 end")        
         comp.addLayer(layer3)
-        
+
         ####################################################################
-        #straight vertical bars
-        
-        print 'generating layer 4'
+        #straight horizontal bars
+        print 'generating layer 4'  
         layer4 = Layer()
         
-        for offset in range(STRAIGHT_ITERATIONS):
+        #10 cm te laat aan de bovenkant
+        # 100/LINE_SPACING = extra iterations
+        EXTRA_ITERATIONS = int(round(100.0 / LINE_SPACING))
+        
+        for offset in range(STRAIGHT_ITERATIONS + EXTRA_ITERATIONS):
             line = Line()
-            offset = offset*LINE_SPACING
+            offset = offset*LINE_SPACING - 100.0 - LINE_SPACING/2.0
             #startpoint
-            x,y = g_Offset+offset,g_yOffset
+            x,y = g_Offset,g_yOffset + offset
             l,r = lengthFromPos(x,y)
             #endpoint
-            x2,y2 = g_Offset+offset,CANVAS_SIZE[1] + g_yOffset
+            x2,y2 = g_MachineWidth-g_Offset,g_yOffset+offset
             l2,r2 = lengthFromPos(x2,y2)
             dot_found = False
-            #print 'calculated range: ',round(r2-r),round(l2-l)
-            for d in range(max(int(round(r2-r)),int(round(l2-l)))):
-                x,y = posFromLengths(r+d, l+d)
-                if x > g_Offset and y < (g_yOffset + CANVAS_SIZE[1]) and x < (g_MachineWidth - g_Offset):
-                    up = self.doDraw((r+d, l+d),mode="l",line=0, level=levels[3],color=(0,0,0,255))
+            for d in range(int(round(r - r2))):
+                x,y = posFromLengths(r-d, l+d)
+                if x > g_Offset and y < g_MachineWidth and y > g_yOffset:
+                    up = self.doDraw((r-d,l+d),mode="l",line=0, level=levels[3],color=(0,0,0,255))
                     if up == -1:
                         up = 0
-                    line.addDot((r+d, l+d,up))
-                    if up == 1:
+                    line.addDot((r-d,l+d,up))
+                    if up==1:
                         dot_found = True
             if dot_found:
                 layer4.addLine(line)
-        
-        l,r = lengthFromPos(g_Offset + CANVAS_SIZE[0]-180, g_yOffset + CANVAS_SIZE[1]+50)
-        line = Line()
-        line.addDot((l,r,up))
-        layer4.addLine(line)
-        layer4.addLine("layer4 end")
+        layer4.addLine("layer4 end")        
         comp.addLayer(layer4)
+        
+        # ####################################################################
+        # #straight vertical bars
+        
+        # print 'generating layer 4'
+        # layer4 = Layer()
+        
+        # for offset in range(STRAIGHT_ITERATIONS):
+        #     line = Line()
+        #     offset = offset*LINE_SPACING
+        #     #startpoint
+        #     x,y = g_Offset+offset,g_yOffset
+        #     l,r = lengthFromPos(x,y)
+        #     #endpoint
+        #     x2,y2 = g_Offset+offset,CANVAS_SIZE[1] + g_yOffset
+        #     l2,r2 = lengthFromPos(x2,y2)
+        #     dot_found = False
+        #     #print 'calculated range: ',round(r2-r),round(l2-l)
+        #     for d in range(max(int(round(r2-r)),int(round(l2-l)))):
+        #         x,y = posFromLengths(r+d, l+d)
+        #         if x > g_Offset and y < (g_yOffset + CANVAS_SIZE[1]) and x < (g_MachineWidth - g_Offset):
+        #             up = self.doDraw((r+d, l+d),mode="l",line=0, level=levels[3],color=(0,0,0,255))
+        #             if up == -1:
+        #                 up = 0
+        #             line.addDot((r+d, l+d,up))
+        #             if up == 1:
+        #                 dot_found = True
+        #     if dot_found:
+        #         layer4.addLine(line)
+        
+        # l,r = lengthFromPos(g_Offset + CANVAS_SIZE[0]-180, g_yOffset + CANVAS_SIZE[1]+50)
+        # line = Line()
+        # line.addDot((l,r,up))
+        # layer4.addLine(line)
+        # layer4.addLine("layer4 end")
+        # comp.addLayer(layer4)
         #if separated==0:
         comp.save(filename+".json")
         #else:
