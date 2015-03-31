@@ -19,8 +19,8 @@ class OrderProcessor:
             raise Exception("to few levels!")
         if len(self.levels) > 4:
             raise Exception("to many levels!")
-        if ".png" not in self.filename:
-            raise Exception( "no .png file!")
+        if ".png"  not in self.filename and ".jpg" not in self.filename:
+            raise Exception( "no valid image file found!")
 
 
     def getFileName(self):
