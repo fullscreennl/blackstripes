@@ -72,7 +72,7 @@ class Builder:
 
     def __init__(self,input_image):
         self.input_image = Image.open(input_image)
-        self.input_image = self.input_image.resize(CANVAS_SIZE,Image.BICUBIC)
+        self.input_image = self.input_image.resize(CANVAS_SIZE,Image.BICUBIC).convert("L")
         
     def doDraw(self,pos3,**kwargs):
         pos3 = posFromLengths(pos3[0],pos3[1])
@@ -80,7 +80,7 @@ class Builder:
         x = int(math.floor(x))-g_Offset
         y = int(math.floor(y))-g_Offset
         try:
-            level = self.input_image.getpixel((x,y))[0]
+            level = self.input_image.getpixel((x,y))
         except:
             return -1 #different handling per layer
         if pos3:
