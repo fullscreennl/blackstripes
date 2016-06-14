@@ -1,7 +1,7 @@
 import json
 import math
-import Image
-import ImageDraw
+from PIL import Image
+from PIL import ImageDraw
 
 from driver import Driver
 from builder import *
@@ -147,8 +147,8 @@ class Simulator:
 
 
 if __name__ == '__main__':
-    basepath = "generated_data/order67/"
-    order_id = "order67"
+    basepath = "generated_data/lisa/"
+    order_id = "lisa"
 
     drivr = SimuDriver(basepath+order_id)
     drivr.simulate()

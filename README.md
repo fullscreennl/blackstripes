@@ -1,3 +1,12 @@
+###NOTE: 
+At Blackstripes.nl we no longer use this system. We now use a SVG based workflow.
+
+###Drawbot driver: 
+https://github.com/fullscreennl/blackstripes-drawbot-driver
+
+###Drawing generation: 
+https://github.com/fullscreennl/blackstripes-python-extensions
+
 Blackstripes
 ============
 

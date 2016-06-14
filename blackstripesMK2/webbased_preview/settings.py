@@ -1,5 +1,5 @@
 import numpy as np
-import Image
+from PIL import Image as Image
 
 v2_colors = np.array([ [0,0,0],
                     [80,30,30],
@@ -56,6 +56,7 @@ for m in v1_mask_images:
 versionmap = {}
 versionmap['v1'] = (v1_colors,v1_levels,v1_masks)
 versionmap['v2'] = (v2_colors,v2_levels,v2_masks)
+versionmap['v3'] = (v1_colors,v1_levels,v1_masks)
 
 def colors(version):
     return versionmap[version][0]

@@ -30,7 +30,7 @@ import tornado.web
 
 from tornado.options import define, options
 
-import Image
+from PIL import Image as Image
 import webbased_preview
 
 import hashlib
@@ -61,17 +61,27 @@ class UploadHandler_v1(UploadHandler):
 class UploadHandler_v2(UploadHandler):
     version = "v2"
 
+class UploadHandler_v3(UploadHandler):
+    version = "v3"
+
 class ColorHandler(tornado.web.RequestHandler):
 
     def get(self,version,image_id):
-        pr = webbased_preview.ColorOptions(image_id,version)
-        self.write(pr.getJSON())
+        if version == "v3":
+            pr = webbased_preview.SketchyColorOptions(image_id,version)
+            self.write(pr.getJSON())
+        else:
+            pr = webbased_preview.ColorOptions(image_id,version)
+            self.write(pr.getJSON())
 
 class PreviewHandler(tornado.web.RequestHandler):
 
     def get(self,version,image_id):
-        pr = webbased_preview.Preview(image_id,version)
-        self.write(pr.getJSON())
+        if version == "v3":
+            pass
+        else:
+            pr = webbased_preview.Preview(image_id,version)
+            self.write(pr.getJSON())
 
 def main():
     tornado.options.parse_command_line()
@@ -79,8 +89,10 @@ def main():
         (r"/", MainHandler),
         (r"/v1/images/upload", UploadHandler_v1),
         (r"/v2/images/upload", UploadHandler_v2),
+        (r"/v3/images/upload", UploadHandler_v3),
         (r"/?(?P<version>[^\/]+)?/color/?(?P<image_id>[^\/]+)?", ColorHandler),
         (r"/?(?P<version>[^\/]+)?/preview/?(?P<image_id>[^\/]+)?", PreviewHandler),
+        #(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': './www/static/'}),
     ])
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(options.port)

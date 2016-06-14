@@ -1,8 +1,15 @@
 import numpy as np
-import Image
+from PIL import Image as Image
+from PIL import ImageStat as ImageStat
+from PIL import ImageDraw as ImageDraw
+from PIL import ImageFont as ImageFont
+from PIL import ImageEnhance as ImageEnhance
 import os
 import settings
 import json
+import struct
+import string
+import shutil
 
 OUPUT_DIR = "www/images/"
 
@@ -18,7 +25,7 @@ class Response:
 
     def __init__(self):
         self.data = {}
-        self.data['endpoint'] = "http://192.168.0.101:8000/"
+        self.data['endpoint'] = "http://127.0.0.1:8000/"
         self.data['imagepath'] = "images/"
         self.data['version'] = "v2/"
         self.data['next'] = ""
@@ -172,8 +179,6 @@ class ColorOptions:
     def getJSON(self):
         return self.response.produce()
 
-
-
 class Preview:
 
     def __init__(self,image_name,version):
@@ -226,6 +231,102 @@ class Preview:
         t = t.resize((500,500),Image.ANTIALIAS)
         self.response.addOption(self.preview_name+"_preview")
         t.save(OUPUT_DIR+self.preview_name+"_preview.png")
+
+    def getJSON(self):
+        return self.response.produce()
+
+class LevelThresholds:
+
+    def __init__(self,filename):
+        try:
+            str_levels = filename.split("_")[:-1]
+            if len(str_levels) == 0:
+                raise Exception("bad filename")
+            self.levels = []
+            for l in str_levels:
+                self.levels.append(int(l))
+        except:
+            self.levels = [217, 180, 144, 108, 72, 36]
+
+
+    def get(self):
+        return self.levels
+
+class SketchyColorOptions:
+
+    def __init__(self,image_name,version):
+        self.version = version
+        self.response = Response()
+        self.response.setNextStep("preview/")
+        self.response.setVersion(version)
+        self.response.setID("colors")
+        self.preview_name = image_name
+        image_name = image_name
+        im = Image.open(OUPUT_DIR+image_name+".jpg").convert("L").resize((1000,1000),Image.BICUBIC)
+        self.numpy_im = np.asarray(im)
+        self.color_deltas = np.diff(settings.colors(version),axis=0)
+        self.generate(OUPUT_DIR+image_name+".jpg")
+
+    def generate(self,image):
+        W = 1000
+        H = 1000
+
+        if ".png" in image or ".jpg" in image:
+
+            print "processing :",image
+
+            levels = LevelThresholds(image).get()
+
+            im = Image.open(image)
+            w,h = im.size
+
+            if w < h:
+                offset = int(round((h-w)/2.0))
+                im = im.crop((0,offset,w,w+offset))
+            else:
+                offset = int(round((w-h)/2.0))
+                im = im.crop((offset,0,h+offset,h))
+
+            _s = int(W),int(H)
+            im = im.resize(_s,Image.BICUBIC)
+            im = im.convert("L")
+
+            #enhancer = ImageEnhance.Contrast(im)
+            #im = enhancer.enhance(2.0)
+
+            I = np.asarray(im)
+            I = I.flatten()
+            outputname = image.split(".")[0]
+            f = open("./image.bsi",'wb')
+
+            for l in levels:
+                SAMPLE = struct.pack('B',l)
+                f.write(SAMPLE)
+
+            for p in I:
+                SAMPLE = struct.pack('B',p)
+                f.write(SAMPLE)
+
+            f.close()
+
+            self.preview(image,im)
+
+    def preview(self,image_name,im):
+        command = ["./sketchy-driver ./manifest.ini "+OUPUT_DIR+self.preview_name]
+        command = string.join(command)
+
+        try:
+            bs = os.popen(command, "r")
+            status = bs.close()
+            if status:
+                raise IOError("sketchy_driver failed (status %d)" % status)
+        except: 
+            raise Exception("oops, sketchy_driver can not create preview")
+
+        for l in range(7):
+            iid = self.preview_name+"_"+str(l)
+            print iid
+            self.response.addOption(iid) 
 
     def getJSON(self):
         return self.response.produce()

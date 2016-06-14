@@ -7,7 +7,7 @@ myPort = 20001
 sockobj = socket(AF_INET, SOCK_STREAM)
 sockobj.connect((myHost, myPort))
 
-f = open("output/boss.bsi",'rb')
+f = open("output/job.bsi",'rb')
 
 data = f.read()
 f.close()
